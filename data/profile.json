@@ -11,7 +11,7 @@
   "about": {
     "paragraphs": [
       "I’m a bioinformatician and microbial genomics researcher working at the intersection of metagenomics, pangenomics, and multi-omics integration to understand host–microbe interactions in infectious disease and cancer. I care about analyses that are both rigorous and useful: from careful study design and data generation to interpretable models, clear biological narratives, and reproducible deliverables.",
-      "In multidisciplinary projects I often serve as the central bioinformatics resource — building robust workflows, maintaining shared codebases, and handing off analyses so teams can iterate quickly and confidently. My day-to-day tooling is pragmatic: Linux and HPC, containers, Nextflow, and GitHub-based collaboration, with an emphasis on transparent assumptions and reproducibility."
+      "My work is centered on data-driven microbiome research, with a particular focus on metagenomics, pangenomics, transcriptomics, metabolomics, and multi-omics integration in translational and disease-oriented settings. I am interested in building analyses and workflows that connect microbial composition, functional potential, and host response in a way that is biologically interpretable and useful for real projects. If you are working on data-driven microbiome research and would like to collaborate, feel free to get in touch."
     ]
   }
 }
