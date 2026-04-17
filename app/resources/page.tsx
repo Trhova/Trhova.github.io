@@ -32,22 +32,10 @@ const resources: Resource[] = [
     url: "https://nf-co.re/"
   },
   {
-    name: "Nextflow",
+    name: "Nextstrain",
     description:
-      "The workflow engine I rely on most when analyses need to be portable across local machines, clusters, and containers. It is especially useful for turning exploratory bioinformatics steps into maintainable pipelines that others can actually rerun.",
-    url: "https://www.nextflow.io/"
-  },
-  {
-    name: "Apptainer / Singularity",
-    description:
-      "My default approach when containerized bioinformatics workflows need to run cleanly on shared HPC infrastructure. It helps keep software environments stable without giving up portability or reproducibility.",
-    url: "https://apptainer.org/"
-  },
-  {
-    name: "MultiQC",
-    description:
-      "A lightweight but effective way to summarize QC outputs across many samples and tools in one place. I use it early in workflows to catch sample-level problems before they become interpretation problems.",
-    url: "https://multiqc.info/"
+      "A strong reference point for making genomic epidemiology and phylogenetic interpretation visually legible. Even outside outbreak-focused work, it is a useful example of how analysis, annotation, and interactive visualization can be combined into something scientists can actually explore.",
+    url: "https://nextstrain.org/"
   }
 ];
 

@@ -108,7 +108,7 @@ export default function HomePage() {
             </div>
             <div className="rounded-2xl border border-border bg-surface p-6 shadow-soft">
               <div className="text-sm font-semibold text-text">
-                Toolkit & working style
+                Areas & working style
               </div>
               <div className="mt-4 flex flex-wrap gap-2 text-xs font-medium text-text">
                 {[
@@ -116,12 +116,11 @@ export default function HomePage() {
                   "Pangenomics",
                   "Multi-omics",
                   "Host–microbe interactions",
-                  "Reproducible pipelines",
-                  "HPC",
-                  "Linux/Bash",
-                  "Containers",
-                  "Nextflow",
-                  "GitHub collaboration"
+                  "3D cell models",
+                  "Patient-derived organoids",
+                  "High-content imaging",
+                  "Mouse models",
+                  "Translational microbiome research"
                 ].map((tag) => (
                   <span
                     key={tag}
@@ -132,9 +131,9 @@ export default function HomePage() {
                 ))}
               </div>
               <div className="mt-6 rounded-xl border border-border/80 bg-surface2 p-4 text-sm text-muted">
-                Discuss / feedback welcome — I’m happy to chat about methods,
-                reproducibility, and practical ways to make multi-omics analyses
-                more actionable.
+                Open to collaboration on data-driven microbiome projects,
+                especially where sequencing, multi-omics, imaging, and model
+                systems need to be tied back to a clear biological question.
               </div>
             </div>
           </div>
