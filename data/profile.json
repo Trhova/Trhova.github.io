@@ -1,0 +1,17 @@
+{
+  "name": "Troels Holger Vaaben",
+  "tagline": "Cancer • Microbiome • Synthetic Biology • Translational Research",
+  "headshot": "/mugshot.png",
+  "links": {
+    "googleScholar": "https://scholar.google.com/citations?user=tZbZawMAAAAJ&hl=en",
+    "linkedin": "https://www.linkedin.com/in/trhova/",
+    "email": "thvaaben@gmail.com",
+    "github": "https://github.com/Trhova"
+  },
+  "about": {
+    "paragraphs": [
+      "I’m a bioinformatician and microbial genomics researcher working at the intersection of metagenomics, pangenomics, and multi-omics integration to understand host–microbe interactions in infectious disease and cancer. I care about analyses that are both rigorous and useful: from careful study design and data generation to interpretable models, clear biological narratives, and reproducible deliverables.",
+      "In multidisciplinary projects I often serve as the central bioinformatics resource — building robust workflows, maintaining shared codebases, and handing off analyses so teams can iterate quickly and confidently. My day-to-day tooling is pragmatic: Linux and HPC, containers, Nextflow, and GitHub-based collaboration, with an emphasis on transparent assumptions and reproducibility."
+    ]
+  }
+}

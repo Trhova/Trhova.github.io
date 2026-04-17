@@ -1,0 +1,90 @@
+[
+  {
+    "title": "Metagenome-guided culturomics for the targeted enrichment of gut microbes",
+    "authors": "J Armetta, SS Li, TH Vaaben, R Vazquez-Uribe, MOA Sommer",
+    "venue": "Nature Communications 16 (1), 663",
+    "year": 2025,
+    "abstract": "The gut microbiome significantly impacts human health, yet cultivation challenges hinder its exploration. Here, we combine deep whole-metagenome sequencing with culturomics to selectively enrich for taxa and functional capabilities of interest. Using a modified commercial base medium, 50 growth modifications were evaluated, spanning antibiotics, physico-chemical conditions, and bioactive compounds. Whole-metagenome sequencing identified medium additives, like caffeine, that enhance taxa often associated with healthier subjects (e.g., Lachnospiraceae, Oscillospiraceae, Ruminococcaceae). We also explore the impact of modifications on the composition of cultured communities and establish a link between medium preference and microbial phylogeny. Leveraging these insights, we demonstrate that combinations of media modifications can further enhance the targeted enrichment of taxa and metabolic functions, such as Collinsella aerofaciens, or strains harboring biochemical pathways involved in dopamine metabolism. This streamlined, scalable approach unlocks the potential for selective enrichment, advancing microbiome research by understanding the impact of different cultivation parameters on gut microbes.",
+    "links": {
+      "doi": "https://doi.org/10.1038/s41467-024-55668-y",
+      "url": "https://doi.org/10.1038/s41467-024-55668-y"
+    }
+  },
+  {
+    "title": "Modulating tumor immunity using advanced microbiome therapeutics producing an indole metabolite",
+    "authors": "TH Vaaben, DO Lützhøft, A Koulouktsis, IM Dawoodi, C Stavnsbjerg, L Kvich, I Gögenur, R Vazquez-Uribe, MOA Sommer",
+    "venue": "EMBO reports 26 (7), 1688-1708",
+    "year": 2025,
+    "abstract": "The gut microbiome has emerged as a key player in modulating immune responses against cancer, suggesting that microbial interventions can enhance treatment outcomes. Indole metabolites produced by probiotic bacteria activate the aryl hydrocarbon receptor (AhR), a transcription factor important for immune cell regulation. Cancer patients with high plasma concentrations of these metabolites have shown improved survival. Building on these findings, we have engineered Escherichia coli Nissle 1917 to produce the AhR agonist indole-3-acetic acid. Delivery of indole-3-acetic acid by tumor-colonizing bacteria changes the tumor microenvironment in a murine model, significantly increasing levels of CXCL9 and IFN-γ and elevating tumor-infiltrating T-cell abundance and activation. Treatment with our engineered strain inhibits tumor growth, improves survival in syngeneic tumor models, and leads to long-lasting immunity in a tumor rechallenge experiment. Further investigation indicates that this immune modulation is driven by the direct activation of AhR by indole-3-acetic acid, leading to differential cytokine expression and a shift in immune cell composition within the tumor. This study highlights the importance of microbial metabolites in immune modulation and supports exploring microbiome-based therapies in oncology.",
+    "links": {
+      "doi": "https://doi.org/10.1038/s44319-025-00386-9",
+      "url": "https://doi.org/10.1038/s44319-025-00386-9"
+    }
+  },
+  {
+    "title": "Advanced Microbiome Therapeutics Accelerate MASLD Recovery by Restoring Intestinal Microbiota Equilibrium and the Gut-Liver Axis in a Mouse Model",
+    "authors": "J Lok, C Chen, V Iannone, AF Babu, EKK Lo, R Vazquez-Uribe, TH Vaaben, M Kettunen, O Savolainen, U Schwab, MOA Sommer, K Hanhineva, M Kolehmainen, H El-Nezami, C Gómez-Gallego",
+    "venue": "Journal of Agricultural and Food Chemistry",
+    "year": 2025,
+    "abstract": "Gut microbiota dysbiosis and endocrine dysregulation are key players in metabolic dysfunction-associated steatotic liver disease (MASLD) development. This study evaluated whether advanced microbiome therapeutics can restore intestinal microbial equilibrium and gut-liver axis balance during MASLD recovery. MASLD was induced in mice using a high-fat, high-sugar diet, and then shifted to a standard diet, where intervention groups received engineered Escherichia coli Nissle 1917 expressing IGF1 (EcNI) or aldafermin (EcNA), and control groups received E. coli Nissle 1917 vehicle (EcN) or no microbial intervention (CTRL). EcNI and EcNA improved MASLD recovery compared to controls by lowering hepatic fat, plasma cholesterol, and body weight, while increasing bacterial diversity, plasma acetate, and propionate, and modulating particular microbial groups, potentially alleviating dysbiosis. Additionally, EcNI and EcNA downregulated acetyl-CoA, the steroid hormone biosynthesis pathway, and EcNA upregulated the pentose phosphate pathway and pyruvate, which are related to oxidative stress reduction. These results suggest that EcNI and EcNA are potential novel treatments for MASLD.",
+    "links": {
+      "doi": "https://doi.org/10.1021/acs.jafc.5c01674",
+      "url": "https://doi.org/10.1021/acs.jafc.5c01674"
+    }
+  },
+  {
+    "title": "Genomic and phenotypic comparison of Saccharomyces cerevisiae and Saccharomyces boulardii",
+    "authors": "HE Duffey, KA Hedin, HP Gelli, TH Vaaben, MOA Sommer",
+    "venue": "bioRxiv",
+    "year": 2025,
+    "abstract": "Saccharomyces boulardii is a widely used probiotic yeast with clinical efficacy against certain gastrointestinal disorders. Although genomically related to S. cerevisiae, the extent to which S. boulardii harbors distinct probiotic-relevant traits remains incompletely defined, particularly across commercially distributed strains. Here, we performed comparative genomic, physiological, and functional analyses of five S. boulardii strains and three S. cerevisiae strains, including baker’s and laboratory variants. S. boulardii strains shared conserved genetic features and exhibited a conserved chromosomal inversion on chromosome XVI, lower copy numbers of CAZyme genes, and lineage-specific amino acid substitutions in central and tryptophan catabolism pathways—potentially underlying elevated production of immunomodulatory metabolites. S. boulardii strains also exhibited enhanced acid tolerance, elevated acetate and succinate production, and robust immunomodulatory activity, including suppression of IL-8 secretion and NF-κB, and consistent activation of the aryl hydrocarbon receptor (AhR) compared to S. cerevisiae. In contrast, S. cerevisiae strains displayed greater bile salt tolerance and faster growth under aerobic and anaerobic conditions at both 30°C and 37°C but lacked consistent anti-inflammatory effects or AhR agonism. Metabolic and immunological phenotypes varied with oxygen availability and strain background. Despite high genomic similarity, S. cerevisiae and S. boulardii exhibit distinct functional capacities relevant to probiotic efficacy. These findings help define species- and strain-specific features that inform the development and regulatory evaluation of next-generation yeast probiotics.",
+    "links": {
+      "doi": "https://doi.org/10.1101/2025.09.08.674931",
+      "url": "https://doi.org/10.1101/2025.09.08.674931"
+    }
+  },
+  {
+    "title": "Saccharomyces boulardii enhances anti-inflammatory effectors and AhR activation via metabolic interactions in probiotic communities",
+    "authors": "KA Hedin, MH Mirhakkak, TH Vaaben, C Sands, M Pedersen, A Baker, R Vazquez-Uribe, S Schäuble, G Panagiotou, A Wellejus, MOA Sommer",
+    "venue": "The ISME Journal 18 (1), wrae212",
+    "year": 2024,
+    "abstract": "Metabolic exchanges between strains in gut microbial communities shape their composition and interactions with the host. This study investigates the metabolic synergy between potential probiotic bacteria and Saccharomyces boulardii, aiming to enhance anti-inflammatory effects within a multi-species probiotic community. By screening a collection of 85 potential probiotic bacterial strains, we identified two strains that demonstrated a synergistic relationship with S. boulardii in pairwise co-cultivation. Furthermore, we computationally predicted cooperative communities with symbiotic relationships between S. boulardii and these bacteria. Experimental validation of 28 communities highlighted the role of S. boulardii as a key player in microbial communities, significantly boosting the community’s cell number and production of anti-inflammatory effectors, thereby affirming its essential role in improving symbiotic dynamics. Based on our observation, one defined community significantly activated the aryl hydrocarbon receptor—a key regulator of immune response—280-fold more effectively than the community without S. boulardii. This study underscores the potential of microbial communities for the design of more effective probiotic formulations.",
+    "links": {
+      "doi": "https://doi.org/10.1093/ismejo/wrae212",
+      "url": "https://doi.org/10.1093/ismejo/wrae212"
+    }
+  },
+  {
+    "title": "Engineered E. coli Nissle 1917 for delivery of bioactive IL-2 for cancer immunotherapy",
+    "authors": "S Tumas, TS Meldgaard, TH Vaaben, S Suarez Hernandez, AT Rasmussen, R Vazquez-Uribe, SR Hadrup, MOA Sommer",
+    "venue": "Scientific Reports 13 (1), 12506",
+    "year": 2023,
+    "abstract": "In this study we performed a step-wise optimization of biologically active IL-2 for delivery using E. coli Nissle 1917. Engineering of the strain was coupled with an in vitro cell assay to measure the biological activity of microbially produced IL-2 (mi-IL2). Next, we assessed the immune modulatory potential of mi-IL2 using a 3D tumor spheroid model demonstrating a strong effect on immune cell activation. Finally, we evaluated the anticancer properties of the engineered strain in a murine CT26 tumor model. The engineered strain was injected intravenously and selectively colonized tumors. The treatment was well-tolerated, and tumors of treated mice showed a modest reduction in tumor growth rate, as well as significantly elevated levels of IL-2 in the tumor. This work demonstrates a workflow for researchers interested in engineering E. coli Nissle for a new class of microbial therapy against cancer.",
+    "links": {
+      "doi": "https://doi.org/10.1038/s41598-023-39365-2",
+      "url": "https://doi.org/10.1038/s41598-023-39365-2"
+    }
+  },
+  {
+    "title": "Changes in liver metabolic pathways demonstrate efficacy of the combined dietary and microbial therapeutic intervention in MASLD mouse model",
+    "authors": "V Iannone, AF Babu, J Lok, C Gómez-Gallego, G D'Auria, R Vazquez-Uribe, TH Vaaben, M Bongers, S Mikkonen, M Vaittinen, I Tikkanen, M Kettunen, A Klåvus, R Sehgal, D Kaminska, J Pihlajamaki, K Hanhineva, H El-Nezami, MOA Sommer, M Kolehmainen",
+    "venue": "Molecular Metabolism 78, 101823",
+    "year": 2023,
+    "abstract": "Aldafermin-producing microbial therapeutic demonstrate MASLD alleviation in mice. The intervention improves hepatic steatosis, body weight and MASLD plasma biomarkers. The hepatic amino acids & lipid metabolism is affected by the intervention. Metabolic pathways changes reveal insulin resistance & oxidative stress alleviation.",
+    "links": {
+      "doi": "https://doi.org/10.1016/j.molmet.2023.101823",
+      "url": "https://doi.org/10.1016/j.molmet.2023.101823"
+    }
+  },
+  {
+    "title": "Characterization of eight bacterial biosensors for microbial diagnostic and therapeutic applications",
+    "authors": "TH Vaaben, R Vazquez-Uribe, MOA Sommer",
+    "venue": "ACS Synthetic Biology 11 (12), 4184-4192",
+    "year": 2022,
+    "abstract": "The engineering of microbial cells to produce and secrete therapeutics directly in the human body, known as advanced microbial therapeutics, is an exciting alternative to current drug delivery routes. These living therapeutics can be engineered to sense disease biomarkers and, in response, deliver a therapeutic activity. This strategy allows for precise and self-regulating delivery of a therapeutic that adapts to the disease state of the individual patient. Numerous sensing systems have been characterized for use in prokaryotes, but a very limited number of advanced microbial therapeutics have incorporated such sensors. We characterized eight different sensors that respond to physiologically relevant conditions and molecules found in the human body in the probiotic strain Escherichia coli Nissle 1917. The resulting sensors were characterized under aerobic and anaerobic conditions and were demonstrated to be functional under gut-like conditions using the nematode Caenorhabditis elegans as an in vivo model. We show for the first time how a biosensor is able to detect in vivo the bile acid-like molecule Δ4-dafachronic acid, a small molecule in C. elegans that regulates lifespan. Furthermore, we exemplify how bacterial sensors can be used to dynamically report on changes in the intestinal environment of C. elegans, by demonstrating the use of a biosensor able to detect changes in lactate concentrations in the gut lumen of individual C. elegans. The biosensors presented in this study allow for dynamic control of expression in vivo and represent a valuable tool in further developing advanced microbiome therapeutics.",
+    "links": {
+      "doi": "https://doi.org/10.1021/acssynbio.2c00491",
+      "url": "https://doi.org/10.1021/acssynbio.2c00491"
+    }
+  }
+]

@@ -1,0 +1,29 @@
+{
+  "posts": [
+    {
+      "id": "causal-microbiome",
+      "title": "From correlations to causation in microbiome research",
+      "tags": ["Microbiome", "Causal inference", "Methods"],
+      "excerpt": "Microbiome studies can generate huge multi-omics datasets, but many analyses stop at association. If we want to understand mechanisms and design interventions, we need explicit causal questions and assumptions — not just ranked features.",
+      "repoUrl": "https://github.com/Trhova/REPLACE_WITH_CAUSAL_GUIDE_REPO",
+      "body": [
+        "A practical way forward is to treat causal inference as part of the analysis workflow: define an estimand, state assumptions, and make confounding and mediation explicit. This often changes what you prioritize in preprocessing, feature selection, and reporting.",
+        "I’m building a small guide repository that walks through two complementary approaches on a microbiome example: double machine learning for flexible adjustment, and mediation analysis for separating direct and indirect effects. The goal is to provide runnable code, sensible defaults, and clear failure modes.",
+        "The payoff is not just better stories — causal framing can narrow a sea of correlated signals into a smaller set of candidate drivers, and it forces you to be honest about what the data can and cannot identify."
+      ]
+    },
+    {
+      "id": "multiomics-decision-guide",
+      "title": "A practical decision guide for multi-omics integration",
+      "tags": ["Multi-omics", "Methods"],
+      "excerpt": "Multi-omics integration can feel overwhelming: many data blocks, many methods, and unclear assumptions. A structured decision guide helps you pick an approach that matches the question, the sample size, and what “signal” should mean.",
+      "repoUrl": "https://github.com/Trhova/Multi-omics",
+      "body": [
+        "The guide starts with the question you actually want to answer (prediction, interpretation, shared biology, or block-specific effects), then maps that to a small set of method families and baselines worth running early.",
+        "It covers supervised integration (e.g., DIABLO), models that distinguish shared vs block-specific structure (e.g., DIVAS), and when latent embeddings like VAEs or conditional VAEs are helpful versus misleading — especially under batch effects and small n.",
+        "I also include pragmatic baselines (MOFA, JIVE, SNF) and simple diagnostics so you can sanity-check whether integration is adding signal or just adding complexity."
+      ]
+    }
+  ]
+}
+

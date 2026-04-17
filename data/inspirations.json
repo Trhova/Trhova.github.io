@@ -1,0 +1,162 @@
+{
+  "Books": [
+    {
+      "title": "The Book of Why",
+      "author": "Judea Pearl",
+      "description": "A clear primer on causal thinking: why it is different from correlation, and why it matters for science that aims to intervene. It also gives perspective on how recent the formal mathematical language of causation is — and why that history still shapes how we argue about evidence."
+    },
+    {
+      "title": "The Emperor of All Maladies",
+      "author": "Siddhartha Mukherjee",
+      "description": "A historical biography of cancer that makes modern oncology feel less like a snapshot and more like an evolving story. It helps explain why certain clinical conventions exist, and how older assumptions still echo in present-day treatment decisions."
+    },
+    {
+      "title": "Malignant",
+      "author": "Vinay Prasad",
+      "description": "A guide to reading medical evidence with a skeptical, patient-centered lens — especially in oncology. It highlights how incentives can diverge from patient benefit, and offers practical instincts for spotting over-interpretation in trials and headlines."
+    },
+    {
+      "title": "Everything Is Tuberculosis",
+      "author": "John Green",
+      "description": "A global-health perspective on tuberculosis that pulls you out of a Western-centric frame. It’s a reminder of how common and deadly TB still is, and how social structure and access to care shape what we call “progress” in medicine."
+    },
+    {
+      "title": "The Illustrated Guide to Machine Learning",
+      "author": "Josh Starmer",
+      "description": "Exceptionally clear visual explanations of core machine learning concepts, with a strong emphasis on intuition over jargon. Great for building a mental model you can actually use when choosing methods and debugging results."
+    },
+    {
+      "title": "The Illustrated Guide to Deep Learning & Neural Networks",
+      "author": "Josh Starmer",
+      "description": "A friendly, visual introduction to neural networks and deep learning that removes unnecessary mystique. It’s especially useful for translating buzzwords into concrete mental pictures and implementation-level understanding."
+    },
+    {
+      "title": "The Song of the Cell",
+      "author": "Siddhartha Mukherjee",
+      "description": "A narrative exploration of the cell as the fundamental unit of biology, and how cell-based thinking reshaped modern medicine. It connects the history of ideas to the practical reality of therapies, diagnostics, and the limits of reductionism."
+    },
+    {
+      "title": "Thinking, Fast and Slow",
+      "author": "Daniel Kahneman",
+      "description": "A deep dive into dual-system thinking, cognitive biases, and how humans evaluate evidence under uncertainty. It’s highly relevant to scientific reasoning — especially when interpreting noisy data, p-values, and compelling stories."
+    }
+  ],
+  "Podcasts": [
+    {
+      "title": "ISAPP Podcast",
+      "creator": "International Scientific Association for Probiotics and Prebiotics (ISAPP)",
+      "description": "Short primers from leaders in microbiome and probiotic research, explained directly by the experts. A good way to stay anchored in mechanisms, definitions, and what the evidence actually supports.",
+      "url": "https://open.spotify.com/show/4j7Ir5dc3vLqx7OsvYt41P"
+    },
+    {
+      "title": "Night Science",
+      "creator": "Itai Yanai & Martin Lercher",
+      "description": "Focuses on the creative, non-linear side of science — how ideas actually form before they become polished papers. It’s an honest look at exploration, taste, and the messy path from curiosity to a research question.",
+      "url": "https://open.spotify.com/show/6berzd2rX6rpJQ6CPnbOtI"
+    },
+    {
+      "title": "Sensible Medicine",
+      "creator": "Sensible Medicine Authors and Editors",
+      "description": "Examines how we know whether medical interventions truly help patients, with a critical lens on industry-sponsored clinical trials. The discussions are practical and evidence-first, with attention to real-world decision-making.",
+      "url": "https://open.spotify.com/show/1yOqwEz9DHj7Gehw8jwPC1"
+    },
+    {
+      "title": "Inflammatory Content",
+      "creator": "Kellen Cavagnero, Ph.D.",
+      "description": "Dr. Kellen Cavagnero walks through complex topics in inflammation together with domain experts in a clear, digestible way. Great for learning immunology by following concrete papers and specific biological questions.",
+      "url": "https://open.spotify.com/show/3tN6QppLt44P7ToJslQFjR"
+    },
+    {
+      "title": "Plenary Session (Vinay Prasad)",
+      "creator": "Vinay Prasad, MD MPH",
+      "description": "Deep dives into medical evidence, oncology trials, and how to critically read the literature. The podcast is currently paused, but the back catalogue is still a useful reference for evidence hygiene.",
+      "url": "https://open.spotify.com/show/4uBCD851E6NGW6ayKBuRn6"
+    },
+    {
+      "title": "The Nextflow Podcast",
+      "creator": "Seqera",
+      "description": "Conversations around reproducible workflows, data pipelines, and best practices in modern computational biology. Especially useful if you care about operationalizing analysis: versioning, containers, and portability.",
+      "url": "https://open.spotify.com/show/1slEz7EL46cHa9vdRmPLY4"
+    },
+    {
+      "title": "The Test Set (Posit)",
+      "creator": "Posit, PBC",
+      "description": "Discussions on data science, statistics, reproducibility, and tooling with a strong applied perspective. It’s a good bridge between method details and how teams actually ship analysis.",
+      "url": "https://open.spotify.com/show/7yjKkBIo6WDwBD4ktpT0NG"
+    },
+    {
+      "title": "Asimov Press",
+      "creator": "Asimov Press",
+      "description": "Long-form conversations and essays on science, technology, and policy aimed at thoughtful scientific audiences. A nice complement to paper-reading when you want broader context and synthesis.",
+      "url": "https://open.spotify.com/show/6fp6spqwbk5hE4Oydjqphk"
+    }
+  ],
+  "YouTube": [
+    {
+      "title": "Bioinformatics Dot Ca",
+      "creator": "Bioinformatics.ca",
+      "description": "Comprehensive lecture-style series covering metagenomics, RNA-seq, R, pathway analysis, and more. I come back to it when I want a structured, training-oriented walkthrough rather than a quick tutorial.",
+      "url": "https://www.youtube.com/@bioinformaticsdotca"
+    },
+    {
+      "title": "Australia Biocommons",
+      "creator": "Australian BioCommons",
+      "description": "Training resources and talks on bioinformatics infrastructure, reproducibility, and best practices. Particularly valuable for the operational side of bioinformatics: tooling, platforms, and community standards.",
+      "url": "https://www.youtube.com/@AustralianBioCommonsChannel"
+    },
+    {
+      "title": "3Blue1Brown",
+      "creator": "3Blue1Brown",
+      "description": "Intuitive math explanations with exceptional visual clarity, great for building deep intuition. Useful when you want to actually understand linear algebra, probability, and dynamical ideas behind models.",
+      "url": "https://www.youtube.com/@3blue1brown"
+    },
+    {
+      "title": "Serrano Academy",
+      "creator": "Serrano.Academy",
+      "description": "Clear, practical machine learning and deep learning lessons that emphasize intuition and implementation. Good for bridging the gap between theory and code without drowning in formalism.",
+      "url": "https://www.youtube.com/@SerranoAcademy"
+    },
+    {
+      "title": "The Net Ninja",
+      "creator": "Net Ninja",
+      "description": "Friendly tutorials on modern web development and programming fundamentals. Great for picking up a framework quickly and building the muscle memory to ship small, clean projects.",
+      "url": "https://www.youtube.com/@NetNinja"
+    },
+    {
+      "title": "Fireship",
+      "creator": "Fireship",
+      "description": "Fast, high-signal overviews of modern developer tools and frameworks; great for quick orientation. I use it to get the lay of the land before diving into docs.",
+      "url": "https://www.youtube.com/@Fireship"
+    },
+    {
+      "title": "Liquidbrain Bioinformatics",
+      "creator": "LiquidBrain Bioinformatics",
+      "description": "Applied bioinformatics tutorials and walkthroughs, often focused on practical workflows. Helpful when you want to see a tool used end-to-end and understand the typical failure modes.",
+      "url": "https://www.youtube.com/@LiquidBrain"
+    },
+    {
+      "title": "Deepia",
+      "creator": "Deepia",
+      "description": "Educational content focused on deep learning concepts and learning resources. A useful supplement when you want a different angle on core ideas and how to study them effectively.",
+      "url": "https://www.youtube.com/@Deepia-ls2fo"
+    },
+    {
+      "title": "Alexander Amini",
+      "creator": "Alexander Amini",
+      "description": "MIT-level introductions to AI and deep learning, blending theory, intuition, and practical examples. Great when you want a course-like arc that still stays grounded in implementation details.",
+      "url": "https://www.youtube.com/@AAmini"
+    },
+    {
+      "title": "Meren Lab",
+      "creator": "Meren Lab",
+      "description": "Open-source microbiome research content, PhD defenses, and excellent Anvi’o tutorials. Ideal for learning by watching real analyses and hearing the reasoning behind decisions.",
+      "url": "https://www.youtube.com/@MerenLab"
+    },
+    {
+      "title": "DigitalSreeni",
+      "creator": "DigitalSreeni",
+      "description": "Bioinformatics workflows, tool walkthroughs, and practical how-to content. Useful for quickly sanity-checking a pipeline step or seeing a common tool used in context.",
+      "url": "https://www.youtube.com/@DigitalSreeni"
+    }
+  ]
+}

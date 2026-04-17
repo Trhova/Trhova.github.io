@@ -1,0 +1,45 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --surface: 255 255 255;
+  --surface2: 248 250 252;
+  --border: 226 232 240;
+  --text: 15 23 42;
+  --muted: 71 85 105;
+  --accent: 59 130 246;
+}
+
+.dark {
+  --surface: 3 7 18;
+  --surface2: 10 16 31;
+  --border: 30 41 59;
+  --text: 226 232 240;
+  --muted: 148 163 184;
+  --accent: 96 165 250;
+}
+
+html,
+body {
+  height: 100%;
+}
+
+body {
+  color: rgb(var(--text));
+  background:
+    radial-gradient(1100px circle at 20% -20%, rgba(59, 130, 246, 0.18), transparent 55%),
+    radial-gradient(900px circle at 85% 10%, rgba(16, 185, 129, 0.12), transparent 55%),
+    linear-gradient(to bottom, rgb(var(--surface2)), rgb(var(--surface)));
+}
+
+::selection {
+  background: rgba(59, 130, 246, 0.25);
+}
+
+a:focus-visible,
+button:focus-visible {
+  outline: 2px solid rgb(var(--accent));
+  outline-offset: 2px;
+}
+
