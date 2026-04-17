@@ -5,7 +5,7 @@
       "title": "From correlations to causation in microbiome research",
       "tags": ["Microbiome", "Causal inference", "Methods"],
       "excerpt": "Microbiome studies can generate huge multi-omics datasets, but many analyses stop at association. If we want to understand mechanisms and design interventions, we need explicit causal questions and assumptions — not just ranked features.",
-      "repoUrl": "https://github.com/Trhova/REPLACE_WITH_CAUSAL_GUIDE_REPO",
+      "repoUrl": "https://github.com/Trhova/Causal-Microbiome-Omics",
       "body": [
         "A practical way forward is to treat causal inference as part of the analysis workflow: define an estimand, state assumptions, and make confounding and mediation explicit. This often changes what you prioritize in preprocessing, feature selection, and reporting.",
         "I’m building a small guide repository that walks through two complementary approaches on a microbiome example: double machine learning for flexible adjustment, and mediation analysis for separating direct and indirect effects. The goal is to provide runnable code, sensible defaults, and clear failure modes.",
@@ -26,4 +26,3 @@
     }
   ]
 }
-
