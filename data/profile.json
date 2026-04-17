@@ -10,8 +10,10 @@
   },
   "about": {
     "paragraphs": [
-      "I work at the interface of microbiome research, cancer biology, and translational experimental systems, combining bioinformatics with hands-on model work to study host–microbe interactions in disease. My computational work centers on metagenomics, pangenomics, transcriptomics, metabolomics, and multi-omics integration, while my experimental experience includes C. elegans, 3D cell models, patient-derived organoids, high-content imaging, and mouse models of cancer, metabolism, and inflammation.",
-      "What I do best is connect these layers in a way that is useful for real projects: shaping study design, making complex datasets interpretable, and keeping the biology, models, and analysis aligned. If you are working on a data-driven microbiome project and want to collaborate across both dry-lab and wet-lab contexts, feel free to get in touch."
+      "I’m a bioinformatician working in microbial genomics, mainly focused on how microbes and hosts interact in things like infectious disease and cancer. I spend a lot of time working with metagenomics, pangenomics, and different types of omics data, trying to piece together what’s actually going on biologically.",
+      "I care about doing things properly, but also making sure the work is useful in practice, from study design and data analysis to results that are clear, interpretable, and reproducible.",
+      "Most of my work revolves around microbiome data, where I’m interested in connecting who’s there (microbes), what they can do (functions), and how the host responds. I like building analyses and workflows that make those connections easier to understand and use in real projects. From the microscopic worm C. elegans to mouse models and patient-derived organoids, I enjoy working across biological systems to better understand host–microbe interactions in real-world contexts.",
+      "If you’re working on something similar, or just have some cool microbiome data, feel free to reach out."
     ]
   }
 }
