@@ -1,0 +1,957 @@
+export const pageTitle =
+  "Bulk RNA-seq: from biological sample to interpretable signal";
+export const eyebrow = "Bulk RNA-seq handbook";
+
+{/* Suggested later split: upstream, downstream-core, downstream-biology, downstream-advanced */}
+
+import { Callout } from "@/components/guides/Callout";
+import { DecisionCard } from "@/components/guides/DecisionCard";
+import { MethodCard } from "@/components/guides/MethodCard";
+import { PipelineOverview } from "@/components/guides/PipelineOverview";
+import { ScrollTable } from "@/components/guides/ScrollTable";
+
+## Executive summary
+
+This guide is intentionally split into two parts:
+
+- **Upstream**: everything from biological sample and library design through QC, quantification, and the construction of a trustworthy count table.
+- **Downstream**: everything after the count table, starting with core differential-expression analysis and then moving into the extra layers that help you squeeze more biology out of the dataset.
+
+If you want one default path that works for most **human or mouse bulk RNA-seq** projects, make it this:
+
+1. Plan the biology first: replication, RNA quality, library type, strandedness, and annotation version.
+2. Treat **FastQC + MultiQC** as the universal first stop after FASTQ generation.
+3. For expression-first work, quantify with **[Salmon](https://salmon.readthedocs.io/en/latest/)** and import with **[tximport](https://bioconductor.org/packages/tximport)**, ideally keeping provenance with **[tximeta](https://bioconductor.org/packages/tximeta)**.
+4. Use **[DESeq2](https://bioconductor.org/packages/DESeq2)** as the default differential-expression engine.
+5. Only after you trust the counts and the design should you add enrichment, pathway activity, TF activity, cell-context inference, and more advanced transcript-aware analyses.
+
+This page is not trying to list every transcriptomics method ever published. It is a practical guideline to the core analysis up to DEGs, and then to the downstream analyses that are most useful when you want to get more biological signal out of bulk RNA-seq without drifting into method tourism. The mainline recommendation is:
+
+**Clean mammalian tissue, expression-first question, reasonable RNA quality**
+
+`poly(A) enrichment -> stranded library -> FASTQ QC -> Salmon or nf-core/rnaseq -> tximport/tximeta -> DESeq2 -> enrichment + pathway activity + TF activity + cell-context inference`
+
+Switch away from that default when the question changes:
+
+- Choose **rRNA depletion** when RNA is degraded, FFPE-like, intronic signal matters, or non-polyadenylated transcripts matter.
+- Choose **STAR** when you need genome alignments for genome-browser coverage, exon-aware counting, or genome-position-aware follow-up.
+- Choose **paired-end and longer reads** when genome-aware follow-up is an important part of the study rather than an afterthought.
+
+<Callout title="Who this is for" tone="success">
+  <p>This guide stays strictly in bulk RNA-seq. If your core question depends on rare cell populations, lineage mixtures, or spatial localization, bulk RNA-seq may still be useful, but a single-cell, spatial, or long-read assay may answer the real question better.</p>
+</Callout>
+
+## Where are you in the process?
+
+<div className="not-prose grid gap-4 md:grid-cols-2">
+  <DecisionCard
+    title="Upstream: I need to get to a trustworthy count table"
+    stage="Upstream"
+    outcome="Choose library chemistry, QC the FASTQs, decide whether you need pseudoalignment or genome alignment, and build a count table you actually trust."
+    href="#upstream-from-sample-to-count-table"
+  />
+  <DecisionCard
+    title="Downstream: I have a count table and want more biology"
+    stage="Downstream"
+    outcome="Do the core DE analysis properly first, then choose the right downstream layer based on the specific biological question you are actually asking."
+    href="#downstream-from-count-table-to-biological-interpretation"
+  />
+</div>
+
+<PipelineOverview />
+
+## Upstream: from sample to count table
+
+The upstream half of the workflow is about getting from biological material to a count table you believe. If this part is weak, no downstream method will save it.
+
+### Before sequencing
+
+The best bulk RNA-seq analysis begins before the sequencer sees a library. Bad experimental structure is harder to rescue than bad code.
+
+### Planning checklist
+
+<ScrollTable>
+  <table>
+    <thead>
+      <tr>
+        <th>Decision</th>
+        <th>Default</th>
+        <th>Switch when</th>
+        <th>Why it matters later</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>RNA capture</td>
+        <td>Stranded poly(A) enrichment</td>
+        <td>Use rRNA depletion for degraded RNA, FFPE-like input, non-polyadenylated transcripts, intronic signal, or broader transcriptome coverage</td>
+        <td>Changes what molecules you are measuring and what quantifiers and interpretations make sense</td>
+      </tr>
+      <tr>
+        <td>Strandedness</td>
+        <td>Stranded</td>
+        <td>Only tolerate unstranded if the library is already made and you cannot change it</td>
+        <td>Resolves overlapping antisense transcription and improves counting in gene-dense regions</td>
+      </tr>
+      <tr>
+        <td>Read geometry</td>
+        <td>Single-end for simple gene-level expression only</td>
+        <td>Use paired-end when genome-aware follow-up or more structure-aware counting matters</td>
+        <td>Affects how confidently you can interpret structure-aware or coordinate-aware signal</td>
+      </tr>
+      <tr>
+        <td>Read length</td>
+        <td>Moderate lengths are fine for gene-level DE</td>
+        <td>Go longer when positional follow-up or more structure-aware interpretation will matter later</td>
+        <td>Short reads compress ambiguity into multi-mapping and transcript assignment problems</td>
+      </tr>
+      <tr>
+        <td>Annotation</td>
+        <td>Lock one version and keep it fixed</td>
+        <td>Switch only with intent and document it clearly</td>
+        <td>Annotation drift breaks joins, gene IDs, length corrections, and reproducibility</td>
+      </tr>
+    </tbody>
+  </table>
+</ScrollTable>
+
+### Library design choices
+
+<MethodCard
+  title="Library design for most bulk RNA-seq studies"
+  defaultTool="Stranded poly(A)-enriched bulk RNA-seq"
+  useWhen="You have reasonably intact human or mouse RNA and the main question is gene-level expression in coding transcripts."
+  inputs={["High-quality RNA from tissue, sorted cells, or cultured cells", "Clear biological question and replicate structure", "Human or mouse reference and annotation plan"]}
+  outputs={["Libraries enriched for mature polyadenylated transcripts", "Cleaner coding-focused signal", "Straightforward downstream gene-level analysis"]}
+  alternatives={["Stranded rRNA depletion", "Unstranded protocols if legacy only", "Paired-end longer-read libraries when coordinate-aware follow-up matters"]}
+  switchWhen="Use stranded rRNA depletion when RNA is degraded, non-polyadenylated RNA matters, or you care about intronic signal and broader transcriptome coverage. Use paired-end and longer reads once genome-aware follow-up becomes a real objective."
+  pros={["Simple and efficient for gene-level DE", "Strong fit for Salmon plus tximport or tximeta workflows", "Strandedness helps in antisense and overlapping loci"]}
+  cons={["Misses non-polyadenylated biology", "Less forgiving with degraded RNA", "Single-end short reads are weak for transcript-structure questions"]}
+  gotcha="People often choose cheap single-end short reads and then later expect confident genome-aware follow-up. That is usually a design mismatch, not an analysis failure."
+  goodOutput="Replicates cluster mainly by biology, strandedness checks agree with the expected protocol, and gene-body coverage looks plausible for the library chemistry rather than erratic or heavily degraded."
+  docs={[
+    { label: "nf-core/rnaseq documentation", href: "https://nf-co.re/rnaseq" },
+    { label: "GENCODE", href: "https://www.gencodegenes.org/" },
+    { label: "Ensembl annotation documentation", href: "https://www.ensembl.org/info/genome/genebuild/index.html" }
+  ]}
+  papers={[
+    { label: "Conesa et al. 2016, RNA-seq best practices", href: "https://doi.org/10.1186/s13059-016-0881-8" }
+  ]}
+/>
+
+<Callout title="Poly(A) versus rRNA depletion" tone="warning">
+  <p><strong>Poly(A) enrichment</strong> is the cleanest default for coding-focused mammalian expression studies with decent RNA integrity.</p>
+  <p><strong>rRNA depletion</strong> is the better default for degraded RNA, FFPE-like material, non-polyadenylated transcripts, nascent or intronic signal, and broader transcriptome coverage. It often trades interpretive simplicity for coverage breadth.</p>
+</Callout>
+
+<Callout title="Human and mouse annotation note">
+  <p>For computation, prefer stable IDs such as Ensembl gene identifiers. Use gene symbols for figures and readable tables later. Strip version suffixes only intentionally, because careless version stripping can silently merge or drop rows.</p>
+  <p>If you map mouse genes into human-centric signatures, treat ortholog mapping as a convenience layer. It is not ground truth, especially for immune, developmental, and rapidly evolving gene families.</p>
+</Callout>
+
+### Annotation and reference strategy
+
+Use one reference bundle and freeze it:
+
+- **[GENCODE](https://www.gencodegenes.org/)**: strong default for human and mouse when you want well-curated gene and transcript models.
+- **[Ensembl](https://www.ensembl.org/info/genome/genebuild/index.html)**: strong default when your ecosystem or annotation tooling is already Ensembl-centric.
+- **[NCBI RefSeq](https://www.ncbi.nlm.nih.gov/refseq/)**: use when a collaborator, institution, or downstream clinical context is already standardized on RefSeq.
+
+Do not mix:
+
+- GENCODE transcriptome index with RefSeq gene annotation in downstream joins
+- Ensembl IDs from one release with symbols from another release
+- human-centric signature resources onto mouse data without explicitly documenting ortholog conversion
+
+<ScrollTable>
+  <table>
+    <thead>
+      <tr>
+        <th>Reference choice</th>
+        <th>Best for</th>
+        <th>Watch out for</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>GENCODE</td>
+        <td>General human and mouse bulk RNA-seq with transcript-level work</td>
+        <td>Version changes will shift transcript membership and gene models</td>
+      </tr>
+      <tr>
+        <td>Ensembl</td>
+        <td>Ensembl-centric pipelines, BioMart-heavy workflows, consistent Ensembl IDs</td>
+        <td>Symbol updates and archived release handling can break later joins</td>
+      </tr>
+      <tr>
+        <td>RefSeq</td>
+        <td>Clinical, NCBI-standardized, or collaborator-constrained projects</td>
+        <td>Transcript model differences can change summarization and exon-level counts</td>
+      </tr>
+    </tbody>
+  </table>
+</ScrollTable>
+
+### Replication, power, and controls
+
+Biological replication matters more than squeezing one more downstream algorithm out of underpowered data.
+
+- Use **[RNASeqPower](https://bioconductor.org/packages/RNASeqPower)** or **[powsimR](https://bvieth.github.io/powsimR/)** when you can still influence the experiment.
+- If you are already underpowered, be honest about effect-size uncertainty and treat pathway-level summaries as supportive, not rescuing.
+- ERCC-style spike-ins can be useful in selected designs, but they do not replace good biological replication and they can create a false sense of security if used as a generic fix.
+
+```r
+# Simple planning logic, not a substitute for study-specific assumptions
+library(RNASeqPower)
+est_power <- rnapower(
+  depth = 20,
+  n = 4,
+  cv = 0.3,
+  effect = 1.5,
+  alpha = 0.05
+)
+est_power
+```
+
+<Callout title="Planning pitfall">
+  <p>Do not treat batch as an afterthought. If all treated samples were processed on a different day, by a different person, or with a different kit lot, that is a design problem first and a statistics problem second.</p>
+</Callout>
+
+### From FASTQ to trusted quantification
+
+Keep the data type explicit at each step:
+
+- `FASTQ`: raw reads and base qualities
+- `BAM/CRAM`: genome alignments
+- `quant.sf` or equivalent: transcript-level abundance estimates
+- gene count matrix: integer counts for count-based DE frameworks
+- normalized matrix: transformed expression for visualization and sample structure
+- ranked vector: gene-wise statistics for GSEA
+- splice-event or exon tables: event-aware follow-up
+- regional scores or genome-aware summaries: specialized outputs
+
+### Universal QC comes first
+
+<MethodCard
+  title="Initial sequencing QC"
+  defaultTool="FastQC + MultiQC"
+  useWhen="Always, immediately after FASTQ generation or after receiving raw data from a core facility."
+  inputs={["FASTQ files", "Sample sheet or sample naming convention", "Knowledge of expected read length, library chemistry, and strandedness"]}
+  outputs={["Per-sample FastQC reports", "One MultiQC summary across the project", "A first-pass decision on whether trimming or deeper RNA-specific QC is necessary"]}
+  alternatives={["RNA-SeQC for RNA-process metrics", "RSeQC for strandedness, read distribution, and gene-body coverage", "Picard CollectRnaSeqMetrics for alignment-aware RNA metrics"]}
+  switchWhen="Move beyond FastQC when you need RNA-specific sanity checks: strandedness inference, ribosomal contamination context, exon-intron read distribution, or gene-body bias. Those require RNA-aware tools and often alignments."
+  pros={["Fast and universal", "Easy to compare many samples", "MultiQC makes bad samples obvious early"]}
+  cons={["FastQC alone is not RNA-aware", "Some warnings are expected and not actionable", "Cannot tell you if strandedness matches the library without deeper checks"]}
+  gotcha="Overreacting to every FastQC warning is a rookie move. RNA-seq libraries often show non-random sequence content and uneven positional composition for legitimate protocol reasons."
+  goodOutput="Adapters are absent or modest, quality tails are not catastrophic, replicate libraries look broadly similar, and any suspicious sample is obvious before downstream work begins."
+  docs={[
+    { label: "FastQC", href: "https://www.bioinformatics.babraham.ac.uk/projects/fastqc/" },
+    { label: "MultiQC", href: "https://docs.seqera.io/multiqc" },
+    { label: "RSeQC", href: "http://rseqc.sourceforge.net/" }
+  ]}
+  papers={[
+    { label: "Ewels et al. 2016, MultiQC", href: "https://doi.org/10.1093/bioinformatics/btw354" }
+  ]}
+/>
+
+```bash
+mkdir -p qc/fastqc
+fastqc data/fastq/*.fastq.gz --outdir qc/fastqc
+multiqc qc -o qc/multiqc
+```
+
+For RNA-specific QC after a genome-alignment step, check:
+
+- **[RSeQC](http://rseqc.sourceforge.net/)**: `infer_experiment.py`, `read_distribution.py`, `geneBody_coverage.py`
+- **[RNA-SeQC](https://github.com/getzlab/rnaseqc)**: broad process metrics, coverage and expression summaries
+- **[Picard CollectRnaSeqMetrics](https://broadinstitute.github.io/picard/command-line-overview.html#CollectRnaSeqMetrics)**: coding, UTR, intronic, intergenic fractions, ribosomal bases
+
+```bash
+infer_experiment.py -r refs/hg38.bed -i align/sample.bam
+geneBody_coverage.py -r refs/hg38_housekeeping.bed -i align/sample.bam -o qc/rseqc/sample
+picard CollectRnaSeqMetrics \
+  I=align/sample.bam \
+  O=qc/picard/sample.rna_metrics.txt \
+  REF_FLAT=refs/gencode.vM35.refFlat.txt \
+  STRAND_SPECIFICITY=SECOND_READ_TRANSCRIPTION_STRAND
+```
+
+### Trimming: useful, but do not do it reflexively
+
+<MethodCard
+  title="Adapter and quality trimming"
+  defaultTool="Trim Galore for simple projects; direct Cutadapt when you need control"
+  useWhen="Adapters or severe quality tails are real problems, or when a core facility note and FastQC make trimming clearly worthwhile."
+  inputs={["FASTQ files", "Expected adapter sequences", "FastQC evidence or protocol knowledge"]}
+  outputs={["Trimmed FASTQ files", "Trim reports", "Cleaner input for aligners or quantifiers when problems were genuine"]}
+  alternatives={["Direct Cutadapt", "No trimming if adapters and tails are not meaningfully harming downstream quantification", "Pipeline-managed trimming inside nf-core/rnaseq"]}
+  switchWhen="Use direct Cutadapt when you need fine control over adapter logic, overlaps, minimum length thresholds, or unusual library structures. Skip trimming when the quantifier already handles modest imperfections and there is no actual problem to solve."
+  pros={["Trim Galore is simple and wraps Cutadapt", "Fixes genuine adapter contamination cleanly", "Easy to explain and automate"]}
+  cons={["Unnecessary trimming can discard useful sequence", "Aggressive trimming can distort read-length distributions", "People often trim out of habit rather than evidence"]}
+  gotcha="Do not trim because a generic tutorial told you to. Trim because your data or protocol gives you a reason."
+  goodOutput="Adapter content drops when it was truly present, short-read collapse is limited, and downstream mapping or quantification improves rather than merely looking cleaner."
+  docs={[
+    { label: "Trim Galore", href: "https://www.bioinformatics.babraham.ac.uk/projects/trim_galore/" },
+    { label: "Cutadapt", href: "https://cutadapt.readthedocs.io/en/stable/" },
+    { label: "nf-core/rnaseq trimming options", href: "https://nf-co.re/rnaseq" }
+  ]}
+  papers={[
+    { label: "Martin 2011, Cutadapt", href: "https://doi.org/10.14806/ej.17.1.200" }
+  ]}
+/>
+
+```bash
+trim_galore --paired \
+  --cores 4 \
+  sample_R1.fastq.gz sample_R2.fastq.gz \
+  --output_dir trimmed/
+```
+
+### Quantification strategy
+
+<MethodCard
+  title="Expression-first quantification"
+  defaultTool="Salmon -> tximport -> tximeta (optional but recommended)"
+  useWhen="The main goal is robust expression analysis and you do not need BAM-centric genome-aware follow-up as the primary output."
+  inputs={["Transcriptome index tied to a frozen annotation release", "FASTQ files", "Sample metadata and library type knowledge"]}
+  outputs={["Transcript abundances", "Gene-level matrices after tximport", "Annotation-linked SummarizedExperiment objects if using tximeta"]}
+  alternatives={["STAR plus featureCounts or Rsubread for BAM-centric work", "kallisto for lightweight pseudoalignment", "HISAT2 when genome alignment is needed but STAR is not your choice"]}
+  switchWhen="Move to STAR when you need genome-browser coverage, exon-level counting, or genome-position-aware analyses. Use aligned-read counting when the follow-up depends on BAMs rather than just expression estimates."
+  pros={["Fast and accurate for expression-first workflows", "Transcript-level estimation can improve gene-level inference when imported correctly", "tximeta preserves annotation provenance and reduces metadata drift"]}
+  cons={["Not the right primary output for browser coverage or coordinate-aware analysis", "Requires care with transcriptome and annotation matching", "Pseudoalignment does not replace true alignments for all questions"]}
+  gotcha="The biggest failure mode is annotation mismatch: Salmon index built from one transcript set, tx2gene built from another, and downstream symbols from a third."
+  goodOutput="Sample-level library sizes and composition look plausible, imported gene-level counts align with biology, and no sample is clearly broken by unexpected strandedness or annotation mismatches."
+  docs={[
+    { label: "Salmon", href: "https://salmon.readthedocs.io/en/latest/" },
+    { label: "tximport", href: "https://bioconductor.org/packages/tximport" },
+    { label: "tximeta", href: "https://bioconductor.org/packages/tximeta" }
+  ]}
+  papers={[
+    { label: "Patro et al. 2017, Salmon", href: "https://doi.org/10.1038/nmeth.4197" },
+    { label: "Soneson et al. 2015, transcript-level improves gene-level inference", href: "https://doi.org/10.12688/f1000research.7563.1" }
+  ]}
+/>
+
+```bash
+salmon quant \
+  -i refs/gencode.v44.salmon_index \
+  -l A \
+  -1 trimmed/sample_R1.fq.gz \
+  -2 trimmed/sample_R2.fq.gz \
+  -p 8 \
+  --validateMappings \
+  -o quants/sample
+```
+
+```r
+library(tximport)
+library(tximeta)
+
+coldata <- read.csv("metadata/samples.csv")
+se <- tximeta(coldata)
+gse <- summarizeToGene(se)
+```
+
+<Callout title="When STAR should be your default instead" tone="warning">
+  <p>Choose <a href="https://github.com/alexdobin/STAR">STAR</a> when you need true genome alignments for exon-aware counting, genome-browser coverage, or genome-position-aware follow-up. Salmon is the default for expression-first questions, not for all questions.</p>
+</Callout>
+
+<ScrollTable>
+  <table>
+    <thead>
+      <tr>
+        <th>Tool path</th>
+        <th>Use this when</th>
+        <th>Main output</th>
+        <th>Main drawback</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Salmon + tximport</td>
+        <td>Fast, expression-first quantification</td>
+        <td>Transcript abundances and imported gene-level counts</td>
+        <td>Not a BAM-centric workflow</td>
+      </tr>
+      <tr>
+        <td>STAR + featureCounts or Rsubread</td>
+        <td>Coverage, browser tracks, exon-aware counting, region-aware follow-up</td>
+        <td>BAMs, junctions, gene or exon counts</td>
+        <td>Heavier compute and storage</td>
+      </tr>
+      <tr>
+        <td>kallisto</td>
+        <td>Lightweight expression workflows and fast iteration</td>
+        <td>Pseudoalignment quantifications</td>
+        <td>Less often the first choice in mixed BAM-centric labs</td>
+      </tr>
+      <tr>
+        <td>HISAT2 + counts</td>
+        <td>Alternative splice-aware aligner path</td>
+        <td>BAMs and countable alignments</td>
+        <td>Not usually my first choice over STAR for bulk mammalian work</td>
+      </tr>
+    </tbody>
+  </table>
+</ScrollTable>
+
+### UMI branch for bulk libraries
+
+UMIs are uncommon in standard bulk RNA-seq, but they do exist in targeted or specialized bulk designs. If UMIs are present, handle them explicitly:
+
+- Use **[UMI-tools](https://umi-tools.readthedocs.io/en/latest/)** for extraction and deduplication.
+- If you run **nf-core/rnaseq**, keep the UMI-aware outputs and deduplication settings visible in your provenance.
+- Deduplication is not an optional cosmetic step if the library was designed around UMIs.
+
+```bash
+umi_tools extract \
+  --bc-pattern=NNNNNNNN \
+  -I sample_R1.fastq.gz \
+  --stdout extracted_R1.fastq.gz \
+  --read2-in sample_R2.fastq.gz \
+  --read2-out extracted_R2.fastq.gz
+```
+
+## Downstream: from count table to biological interpretation
+
+The downstream half starts once you have a count table and credible metadata. The first job is still boring and essential: import, QC, design, normalization, and differential expression. Only then does it make sense to start asking more ambitious biological questions.
+
+### Core analysis
+
+Once you have a count-like object and trustworthy metadata, the work becomes statistical and interpretive rather than purely computational.
+
+### Import, normalization, and sample structure
+
+For most users, the best default is **DESeq2** on imported gene-level counts. If you quantified with Salmon, do not throw away transcript-level work by flattening it carelessly. Use `tximport`, and use `tximeta` when you can.
+
+```r
+library(DESeq2)
+library(tximeta)
+
+se <- tximeta(read.csv("metadata/samples.csv"))
+gse <- summarizeToGene(se)
+
+dds <- DESeqDataSet(gse, design = ~ batch + condition)
+dds <- DESeq(dds)
+
+vsd <- vst(dds, blind = FALSE)
+plotPCA(vsd, intgroup = c("condition", "batch"))
+```
+
+### Differential expression
+
+<MethodCard
+  title="Gene-level differential expression"
+  defaultTool="DESeq2"
+  useWhen="Standard bulk RNA-seq differential expression with biological replicates and integer gene counts or tximport-derived gene-level counts."
+  inputs={["Gene-level count matrix or SummarizedExperiment", "Sample metadata with condition, batch, and covariates", "Clear contrasts and reference levels"]}
+  outputs={["Normalized counts", "Dispersion estimates", "Log2 fold changes, adjusted p-values, shrunken effect sizes"]}
+  alternatives={["edgeR", "limma-voom", "Likelihood-ratio testing for multi-level questions"]}
+  switchWhen="Use edgeR when you want a similarly strong count-modeling framework with explicit filtering and flexible design handling. Use limma-voom when the linear-model workflow and precision weights are a better fit for the broader analysis ecosystem or multi-factor modeling."
+  pros={["Default choice for most users", "Strong documentation and community practice", "lfcShrink gives more stable effect-size interpretation"]}
+  cons={["Not magic against bad design", "Can be over-trusted when metadata are weak", "Requires careful factor coding and contrast specification"]}
+  gotcha="People often batch-correct the counts first and then fit DESeq2. Usually the right move is to model batch in the design, not to mutate the counts blindly upstream."
+  goodOutput="Replicates cluster sensibly, dispersion fits are stable, MA plots are not dominated by one broken sample, and shrunken log2 fold changes tell a coherent biological story."
+  docs={[
+    { label: "DESeq2", href: "https://bioconductor.org/packages/DESeq2" },
+    { label: "edgeR", href: "https://bioconductor.org/packages/edgeR" },
+    { label: "limma", href: "https://bioconductor.org/packages/limma" }
+  ]}
+  papers={[
+    { label: "Love et al. 2014, DESeq2", href: "https://doi.org/10.1186/s13059-014-0550-8" },
+    { label: "Law et al. 2014, voom", href: "https://doi.org/10.1186/gb-2014-15-2-r29" }
+  ]}
+/>
+
+```r
+res <- results(dds, contrast = c("condition", "treated", "control"))
+res_shrunk <- lfcShrink(dds, coef = "condition_treated_vs_control", type = "apeglm")
+
+sig <- subset(as.data.frame(res_shrunk), padj < 0.05 & abs(log2FoldChange) > 1)
+head(sig[order(sig$padj), ])
+```
+
+<Callout title="What is statistically detectable vs what is biologically meaningful?" tone="warning">
+  <p>A small adjusted p-value tells you that a change is statistically detectable under the model. It does <strong>not</strong> tell you that the change is biologically important, cell-intrinsic, or worth building a story around.</p>
+  <p>In many real bulk RNA-seq studies, effect size, consistency across replicates, and biological interpretability matter more than a binary significance line. Shrunken log2 fold change and overall coherence are often more useful for prioritization than asking whether a gene sits just above or below `padj < 0.05`.</p>
+</Callout>
+
+<Callout title="Count models versus voom">
+  <p><strong>DESeq2</strong> and <strong>edgeR</strong> model counts directly. <strong>voom</strong> estimates mean-variance weights from count data and passes those weights into limma's linear-model framework. None of these frameworks will rescue a confused design formula.</p>
+</Callout>
+
+### Batch effects and unwanted variation
+
+<MethodCard
+  title="Batch handling and unwanted variation"
+  defaultTool="Model batch in the design first; use sva, svaseq, or RUVSeq when needed"
+  useWhen="You have clear technical structure, latent confounding, or hidden variation that is not fully captured by your known metadata."
+  inputs={["Count matrix", "Sample metadata", "Biological design you are trying not to destroy", "A realistic hypothesis about what the unwanted variation might be"]}
+  outputs={["Adjusted design terms", "Surrogate variables or unwanted-variation factors", "Cleaner interpretation of residual technical structure"]}
+  alternatives={["ComBat for selected corrected-expression tasks", "svaseq when counts are the starting point", "RUVSeq when control genes or replicate logic supports it"]}
+  switchWhen="Use ComBat-style adjustment only when you understand why a corrected expression matrix is needed for a specific downstream task. Do not use it as a ritual before DE. Use svaseq or RUVSeq when hidden structure is suspected and a count-aware framework is still desired."
+  pros={["Prevents technical structure from masquerading as biology", "Works well when the design is honest", "Can stabilize PCA and downstream interpretations"]}
+  cons={["Easy to over-correct", "Hidden-factor methods can absorb real biology", "Badly confounded designs remain badly confounded"]}
+  gotcha="Never try to 'correct away' a batch effect before asking whether batch and biology are partially or fully aliased. If they are, statistics cannot manufacture information that was never collected."
+  goodOutput="Known technical structure becomes less dominant, but the biological contrast of interest remains visible and interpretable rather than flattened into noise."
+  docs={[
+    { label: "sva", href: "https://bioconductor.org/packages/sva" },
+    { label: "RUVSeq", href: "https://bioconductor.org/packages/RUVSeq" },
+    { label: "DESeq2 design formulas", href: "https://bioconductor.org/packages/DESeq2" }
+  ]}
+  papers={[
+    { label: "Leek et al. 2012, sva", href: "https://doi.org/10.1093/bioinformatics/bts034" },
+    { label: "Risso et al. 2014, RUVSeq", href: "https://doi.org/10.1038/nbt.2931" }
+  ]}
+/>
+
+```r
+library(sva)
+
+mod  <- model.matrix(~ condition, data = colData(dds))
+mod0 <- model.matrix(~ 1, data = colData(dds))
+sv   <- svaseq(counts(dds), mod = mod, mod0 = mod0)$sv
+
+colData(dds)$sv1 <- sv[, 1]
+design(dds) <- ~ sv1 + batch + condition
+dds <- DESeq(dds)
+```
+
+### What to inspect before believing any DE table
+
+- PCA or MDS on transformed counts
+- Sample-sample distances
+- Library-size spread and composition bias
+- Gene-body coverage and strandedness sanity checks
+- Outlier samples in MultiQC and RNA-specific QC
+- Whether low-count filtering was reasonable
+- Whether the design formula matches the actual experiment
+
+### Slow down before interpretation
+
+<Callout title="A DEG table is not yet a biological conclusion" tone="warning">
+  <p>Before you move into enrichment or more advanced downstream layers, stop and ask what the DE pattern might actually reflect. Expression changes can represent specific biology, but they can also reflect response, compensation, injury, timing effects, generic stress programs, or differences in cell mixture.</p>
+  <p>Use this as a checkpoint: is the signal most consistent with technical structure, a generic stress program, a composition shift, or a plausible biology-first effect that deserves deeper follow-up?</p>
+</Callout>
+
+### Minimum viable analysis vs deep dive
+
+<ScrollTable>
+  <table>
+    <thead>
+      <tr>
+        <th>Mode</th>
+        <th>What it should include</th>
+        <th>Use this when</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Minimum viable analysis</td>
+        <td>Trusted metadata and design, FASTQ QC, trustworthy quantification and count table, DESeq2 or a justified equivalent, one sensible enrichment layer such as ranked-list enrichment, and manual inspection of a few biologically relevant genes or signatures</td>
+        <td>This is enough for most studies that mainly want robust differential expression and a reasonable biological summary</td>
+      </tr>
+      <tr>
+        <td>Deep dive</td>
+        <td>TF activity, pathway activity versus pathway membership, sample-level scoring and heterogeneity, cell-context inference, and genome-aware regional interpretation when the biological question genuinely needs more resolution</td>
+        <td>Use this when the core analysis is solid and the study genuinely needs more regulatory, compositional, or genome-position-aware resolution</td>
+      </tr>
+    </tbody>
+  </table>
+</ScrollTable>
+
+### Beyond DEGs: what question are you actually asking?
+
+This is where most people either gain biological traction or start over-interpreting weak data. Start with ranked gene lists and effect sizes you trust. Pathway-level summaries can be more stable than single-gene thresholding, especially in moderately powered studies, but they do not rescue a weak design, mislabeled samples, or a broken count table. Then layer summaries that answer different questions.
+
+### Enrichment analysis
+
+This is the first downstream layer most people should add after DE. The main mistake is treating `ORA`, `GSEA`, `ssGSEA`, and pathway-activity models as if they answer the same question. They do not.
+
+<ScrollTable>
+  <table>
+    <thead>
+      <tr>
+        <th>Method</th>
+        <th>Main question it answers</th>
+        <th>Best input</th>
+        <th>Use it when</th>
+        <th>Main limitation</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>ORA</td>
+        <td>Which pathways or processes are over-represented in my chosen DEG list?</td>
+        <td>A thresholded gene list</td>
+        <td>You want a simple summary of a clear DEG set</td>
+        <td>Depends heavily on the threshold you chose</td>
+      </tr>
+      <tr>
+        <td>GSEA or fgsea</td>
+        <td>Do genes from a pathway shift toward the top or bottom of the full ranked result, even if few pass a hard cutoff?</td>
+        <td>A ranked vector across all tested genes</td>
+        <td>You do not want to throw away sub-threshold structure</td>
+        <td>Still depends on the quality and relevance of the gene-set collection</td>
+      </tr>
+      <tr>
+        <td>ssGSEA or GSVA</td>
+        <td>Which pathways vary across individual samples rather than only between groups?</td>
+        <td>A normalized expression matrix</td>
+        <td>The sample is the unit of interest, for example subtype structure or responder versus non-responder patterns</td>
+        <td>Scores are relative and not the same thing as direct pathway activity</td>
+      </tr>
+      <tr>
+        <td>PROGENy</td>
+        <td>Which signaling pathways appear active based on downstream transcriptional footprints?</td>
+        <td>A normalized expression matrix</td>
+        <td>You want pathway activity estimates rather than simple membership overlap</td>
+        <td>Limited to the pathways modeled by the resource</td>
+      </tr>
+    </tbody>
+  </table>
+</ScrollTable>
+
+Use these methods to ask different kinds of questions:
+
+- **ORA**: "Among the genes I am willing to call DE, what kinds of processes are over-represented?"
+- **GSEA / fgsea**: "Even if I do not trust an arbitrary DEG cutoff, do coherent programs move up or down across the ranked result?"
+- **ssGSEA / GSVA**: "Which samples look pathway-high or pathway-low, and does that explain phenotype, subtype, batch, or hidden heterogeneity?"
+- **PROGENy**: "Do the expression changes look like downstream consequences of a signaling pathway being active?"
+
+### Gene-set choice can change the story
+
+Different gene-set collections can yield different biological conclusions from the same data. That does not automatically mean one result is wrong. It often means the resources encode different biological priors, pathway definitions, levels of granularity, curation styles, and historical biases.
+
+<Callout title="Gene-set dependence is real" tone="warning">
+  <p><strong>Hallmark</strong>, <strong>Reactome</strong>, <strong>GO</strong>, and cell-type signature resources can all produce meaningfully different enrichment results on the same ranked list. Hallmarks are still useful because they are compact and interpretable, but they are not universal truth and should not be treated as the sole reference universe.</p>
+  <p>Enrichment results should be framed as interpretations conditional on the chosen gene-set universe, not as absolute representations of biology. Convergence across multiple resources is often more convincing than any single enrichment run, and users should avoid overclaiming from one preferred collection.</p>
+</Callout>
+
+<MethodCard
+  title="Enrichment analysis default"
+  defaultTool="fgsea for ranked-list enrichment, with ORA and sample-level scoring as complementary layers"
+  useWhen="You have a DE result or ranked vector and want to move from gene-by-gene results to pathway-level interpretation without pretending every method answers the same question."
+  inputs={["A thresholded DEG list for ORA, a ranked full-gene vector for GSEA, or a normalized expression matrix for sample-level scoring", "Gene sets matched to species and identifier type", "A concrete question about process enrichment, sample variation, or pathway activity"]}
+  outputs={["Enrichment scores, p-values, normalized enrichment scores, or per-sample pathway scores", "Leading-edge genes or pathway-level summaries", "A more interpretable pathway view of the experiment"]}
+  alternatives={["clusterProfiler for ORA and wrapper workflows", "GSVA or ssGSEA for per-sample scores", "PROGENy for pathway-footprint activity scoring"]}
+  switchWhen="Use ORA when you want a quick, thresholded DEG summary. Use fgsea when you want a more stable ranked-list method. Use GSVA or ssGSEA when the sample is the unit of interest. Use PROGENy when you want pathway activity inferred from responsive genes rather than plain membership overlap."
+  pros={["Lets you summarize the result at the process level", "fgsea is fast and practical", "Different enrichment frameworks let you match the method to the biological question"]}
+  cons={["Gene-set choice often matters more than the code", "Ortholog mapping can distort signal", "Enrichment is descriptive support, not proof of mechanism"]}
+  gotcha="The wrong question produces the wrong method. Using ORA when the real question is sample heterogeneity, or using GSVA when the real question is ranked perturbation response, usually makes the result feel muddy for good reason."
+  goodOutput="Top hits fit the experimental context, leading-edge genes are biologically recognizable, and the result is specific enough to guide the next interpretive step rather than producing a giant bag of vaguely related terms."
+  docs={[
+    { label: "fgsea", href: "https://bioconductor.org/packages/fgsea" },
+    { label: "clusterProfiler", href: "https://bioconductor.org/packages/clusterProfiler" },
+    { label: "GSVA", href: "https://bioconductor.org/packages/GSVA" }
+  ]}
+  papers={[
+    { label: "Subramanian et al. 2005, GSEA", href: "https://doi.org/10.1073/pnas.0506580102" },
+    { label: "Hänzelmann et al. 2013, GSVA", href: "https://doi.org/10.1186/1471-2105-14-7" }
+  ]}
+/>
+
+```r
+library(fgsea)
+
+stats <- res_shrunk$stat
+names(stats) <- rownames(res_shrunk)
+stats <- sort(stats, decreasing = TRUE)
+
+hallmark <- gmtPathways("refs/h.all.v2024.1.Hs.symbols.gmt")
+fg <- fgsea(pathways = hallmark, stats = stats, minSize = 15, maxSize = 500)
+head(fg[order(fg$padj), c("pathway", "NES", "padj")])
+```
+
+```r
+library(clusterProfiler)
+
+ora <- enrichGO(
+  gene = rownames(subset(sig, log2FoldChange > 1)),
+  OrgDb = org.Hs.eg.db,
+  keyType = "ENSEMBL",
+  ont = "BP"
+)
+```
+
+```r
+library(GSVA)
+
+ssgsea_scores <- gsva(
+  as.matrix(vst_mat),
+  hallmark,
+  method = "ssgsea"
+)
+```
+
+<Callout title="Gene-set choice matters more than most people admit" tone="warning">
+  <p>MSigDB Hallmarks are still useful because they are compact, interpretable, and deliberately less redundant, but they are not the only sensible universe. The Hallmark collection was introduced in 2015, while MSigDB itself continues to ship current releases, including human release <strong>v2026.1.Hs</strong> updated in <strong>January 2026</strong>.</p>
+  <p>If you want broader or more recently refreshed collections, look beyond Hallmarks to current MSigDB collections such as Reactome, GO, C8 cell-type signatures, and curated signatures, or to the <a href="https://baderlab.org/GeneSets">BaderLab GeneSets</a> resource, which states that its GMT collections are updated monthly from source resources. The same dataset can look inflammatory in one collection, developmental in another, and cell-composition-driven in a third, so the gene-set universe is part of the interpretation, not a neutral background detail.</p>
+</Callout>
+
+### TF activity, pathway activity, sample-level scoring, genome-aware analysis, and network context
+
+<ScrollTable>
+  <table>
+    <thead>
+      <tr>
+        <th>Method layer</th>
+        <th>What it does</th>
+        <th>What biological question it answers</th>
+        <th>When to use it</th>
+        <th>Key limitation</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>TF activity<br />`decoupleR + DoRothEA`</td>
+        <td>Infers regulator activity from the coordinated behavior of known target genes, rather than from TF expression alone.</td>
+        <td>Which upstream transcriptional regulators best explain the observed expression pattern?</td>
+        <td>Use it when you want to move from DE genes to plausible regulatory drivers.</td>
+        <td>Depends on the quality and context-relevance of the regulator-target network.</td>
+      </tr>
+      <tr>
+        <td>Pathway activity<br />`PROGENy`</td>
+        <td>Uses pathway-responsive genes to estimate signaling activity instead of simple overlap with pathway members.</td>
+        <td>Do the data look like downstream consequences of a pathway being active?</td>
+        <td>Use it when signaling activity is more interesting than pathway membership.</td>
+        <td>Only covers pathways modeled by the resource and is still an inferred activity layer.</td>
+      </tr>
+      <tr>
+        <td>Sample-level scoring<br />`GSVA / ssGSEA`</td>
+        <td>Scores pathways or signatures per sample so you can compare samples directly rather than only group contrasts.</td>
+        <td>Which samples carry a program strongly, and does that explain heterogeneity or subtype structure?</td>
+        <td>Use it when the sample is the main unit of interest.</td>
+        <td>Scores are relative summaries, not direct proof that a pathway is active.</td>
+      </tr>
+      <tr>
+        <td>Genome-aware regional analysis<br />`PREDA`</td>
+        <td>Maps gene-level statistics onto genomic coordinates and looks for spatially clustered signal across the genome.</td>
+        <td>Are expression changes spatially organized along the genome?</td>
+        <td>Use it when you suspect chromosomal domains, broad regulatory regions, or structure-linked effects.</td>
+        <td>It is hypothesis-generating and works best when coordinate-level organization is biologically plausible.</td>
+      </tr>
+      <tr>
+        <td>Network context<br />`STRINGdb`</td>
+        <td>Places prioritized genes into known interaction neighborhoods and connected modules.</td>
+        <td>Do my prioritized genes form coherent biological neighborhoods or hub-centered modules?</td>
+        <td>Use it when you want a structured network view of the signal.</td>
+        <td>Network connectivity can amplify annotation popularity and literature bias.</td>
+      </tr>
+      <tr>
+        <td>Cell composition / context<br />`xCell2`, `MuSiC`, `CIBERSORTx`, `mMCP-counter`</td>
+        <td>Estimates tissue context, enrichment, or composition-like shifts from bulk profiles.</td>
+        <td>Is the bulk signal driven by who is in the sample, what state those cells are in, or both?</td>
+        <td>Use it when mixture effects are a plausible explanation for the DE pattern.</td>
+        <td>Reference mismatch and composition-versus-state ambiguity remain major limits.</td>
+      </tr>
+    </tbody>
+  </table>
+</ScrollTable>
+
+Practical defaults:
+
+- Use **decoupleR + DoRothEA** when the question is upstream regulation.
+- Use **PROGENy** when the question is pathway activity rather than pathway membership.
+- Use **GSVA** or **ssGSEA** when the sample, not the contrast, is the main unit of interest.
+- Use **PREDA** when you want to know whether the signal is spatially organized along chromosomes rather than only grouped by pathway membership.
+- Use **STRINGdb** when you want to see whether prioritized genes form a connected biological neighborhood.
+- Use the cell-context methods when composition shifts are a plausible explanation for the signal.
+
+```r
+library(decoupleR)
+library(progeny)
+library(GSVA)
+
+# Example shape: genes x samples matrix
+scores <- progeny(vst_mat, scale = TRUE, organism = "Human", top = 500)
+```
+
+```python
+import pandas as pd
+import decoupler as dc
+
+expr = pd.read_parquet("exports/vst_matrix.parquet")
+net = dc.get_dorothea(organism="human", levels=["A", "B", "C"])
+tf_scores = dc.run_ulm(mat=expr.T, net=net, source="source", target="target", weight="weight")
+```
+
+### Genome-aware visualization and positional analysis
+
+This is not a separate data type or a completely different workflow. It is another way of interpreting the same differential-expression signal by asking where it sits along the genome rather than only which pathway list it overlaps.
+
+<MethodCard
+  title="Genome-aware regional interpretation"
+  defaultTool="PREDA"
+  useWhen="You want to know whether the differential-expression signal is spatially organized along the genome rather than dispersed gene by gene."
+  inputs={["Gene-level statistics such as log2 fold change, Wald statistic, or other signed DE summaries", "Genomic coordinates for the tested genes", "A biologically plausible reason to care about regional organization, such as chromatin state, copy-number effects, or domain-level regulation"]}
+  outputs={["Smoothed genome-wide signal tracks", "Genomic regions showing clustered up- or downregulation", "Region-level hypotheses for follow-up interpretation"]}
+  alternatives={["Gviz or IGV for focused coordinate-level visualization", "deepTools for metagene and coverage summaries when BAM or bigWig files are available", "Simple chromosome-level summary plots when you only need exploratory context"]}
+  switchWhen="Use Gviz or IGV when you already know the loci you want to inspect. Use deepTools when the question is coverage shape or metagene behavior. Use PREDA when the real question is whether expression changes are regionally clustered and non-random along the genome."
+  pros={["Directly tests whether expression changes are spatially organized along chromosomes", "Useful for detecting coordinated regulation across genomic regions", "Can generate hypotheses about chromatin organization, epigenetic control, or copy-number-linked effects in appropriate contexts"]}
+  cons={["More interpretive than routine DE follow-up", "Signal can be noisy if the underlying gene-level statistics are weak", "Best viewed as a hypothesis-generating layer rather than standalone proof of mechanism"]}
+  gotcha="A PREDA hit is not automatically a copy-number event or chromatin domain. It tells you that nearby genes are behaving in a coordinated way more than expected, and that pattern still needs biological interpretation."
+  goodOutput="You see coherent up- or downregulated chromosomal regions rather than isolated scattered hits, and the detected regions fit a plausible story about domain-level regulation, chromatin structure, or structural variation in the biological context."
+  docs={[
+    { label: "PREDA", href: "https://bioconductor.org/packages/PREDA" },
+    { label: "Gviz", href: "https://bioconductor.org/packages/Gviz" },
+    { label: "deepTools", href: "https://deeptools.readthedocs.io/en/develop/" }
+  ]}
+  papers={[
+    { label: "Ferrari et al. 2011, PREDA", href: "https://doi.org/10.1093/bioinformatics/btr455" }
+  ]}
+/>
+
+PREDA is useful when you want to ask a different question from standard DE:
+
+- Are up- or downregulated genes clustering into genomic neighborhoods rather than appearing as isolated hits?
+- Do chromosomal domains seem to behave together?
+- Could the pattern reflect broad regulatory effects such as chromatin-level regulation, domain organization, or structural effects?
+- In the right contexts, especially cancer, could the spatial pattern suggest copy-number-linked effects worth testing more directly?
+
+Conceptually, PREDA does three things:
+
+1. Takes gene-level statistics such as log2 fold change or a DE test statistic and maps them onto genomic coordinates.
+2. Applies smoothing across the genome so that nearby signals contribute to a regional pattern rather than being treated as isolated points.
+3. Detects non-random regional clustering of signal, highlighting chromosomal segments where the expression pattern appears spatially organized.
+
+```r
+library(PREDA)
+
+# Pseudocode outline: build a position-related object using gene-level statistics
+# and genomic coordinates, then run PREDA smoothing and region detection.
+
+# ge_table should contain: chromosome, genomic start, genomic end, statistic
+# such as shrunken log2FC or Wald statistic.
+```
+
+### Cell composition and tissue context
+
+Treat these methods as context estimators, not truth oracles.
+
+This section exists to test one of the main ambiguities in bulk RNA-seq: is the signal driven by who is in the sample, what state those cells are in, or both? If you skip that question, it becomes very easy to tell a cell-intrinsic story about what is really a mixture-level shift.
+
+<ScrollTable>
+  <table>
+    <thead>
+      <tr>
+        <th>Method</th>
+        <th>Best framed as</th>
+        <th>Needs reference?</th>
+        <th>Best use case</th>
+        <th>Important caution</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a href="https://github.com/dviraran/xCell2">xCell2</a></td>
+        <td>Enrichment or context score</td>
+        <td>No matched single-cell reference required</td>
+        <td>Quick tissue-context inference when you want a broad human-oriented enrichment layer</td>
+        <td>Better as enrichment than absolute proportion estimation; human-centric resources need caution in mouse</td>
+      </tr>
+      <tr>
+        <td><a href="https://xuranw.github.io/MuSiC/articles/MuSiC.html">MuSiC</a></td>
+        <td>Composition estimation</td>
+        <td>Yes</td>
+        <td>You have a biologically matched single-cell reference from similar tissue or condition</td>
+        <td>Reference mismatch will dominate the result</td>
+      </tr>
+      <tr>
+        <td><a href="https://cibersortx.stanford.edu/">CIBERSORTx</a></td>
+        <td>Proportion-style deconvolution</td>
+        <td>Usually yes</td>
+        <td>When a compatible signature matrix or reference exists and the tissue context is close</td>
+        <td>Model assumptions are context-specific; portability is limited</td>
+      </tr>
+      <tr>
+        <td><a href="https://github.com/cit-bioinfo/mMCP-counter">mMCP-counter</a></td>
+        <td>Enrichment or abundance-like score</td>
+        <td>No matched single-cell reference required</td>
+        <td>Mouse studies needing a mouse-aware immune and stromal context layer</td>
+        <td>Do not compare its output scale directly to human-only methods</td>
+      </tr>
+    </tbody>
+  </table>
+</ScrollTable>
+
+Recommended practical default:
+
+- Start with **xCell2** or **mMCP-counter** for a conservative enrichment-style tissue-context readout.
+- Switch to **MuSiC** when you have a genuinely matched single-cell reference and want proportion-aware estimation.
+- Use **CIBERSORTx** when the signature model is known to transfer to your context, not because it is famous.
+
+<Callout title="Cell composition versus cell state" tone="warning">
+  <p>A higher immune or stromal signature can mean more cells of that type, the same cells in a different state, or both. Use these methods to stress-test your interpretation, not to declare exact ground truth from bulk alone.</p>
+</Callout>
+
+### Targeted panels and ortholog sanity checks
+
+Do not let an enrichment package decide your biology for you. Always return to a few hand-curated gene panels:
+
+- interferon and inflammatory genes
+- ECM and adhesion genes
+- mitochondrial and stress genes
+- lineage markers relevant to your tissue
+- known perturbation targets
+
+For mouse studies pushed through human-centric resources, create an explicit ortholog table and keep both original and mapped identifiers side by side.
+
+### Common pitfalls
+
+This section is intentionally blunt. Most bulk RNA-seq pain comes from a small set of repeated mistakes.
+
+### Technical and analytical pitfalls
+
+1. **No real replication.** Statistical sophistication does not replace biological replication.
+2. **Annotation drift.** If the index, tx2gene mapping, and visualization symbols came from different annotation releases, joins will break or silently lie.
+3. **Wrong strandedness assumption.** Use `infer_experiment.py` or equivalent checks. Counting with the wrong strand setting can quietly invert confidence in some loci.
+4. **Blind trimming.** Trim because there is a problem, not because it feels hygienic.
+5. **Ignoring multi-mapping.** Repetitive genes, paralogs, pseudogenes, and short-read ambiguity are biological and computational realities.
+6. **Over-correcting batch.** Batch correction can remove signal of interest if design and biology are entangled.
+7. **Short reads for coordinate-aware questions.** If the goal is genome-aware interpretation or positional follow-up, cheap short single-end data are often the real limitation.
+8. **rRNA contamination denial.** High rRNA fractions are not just annoying; they waste depth and can indicate library problems.
+9. **Assuming weak signal means no biology.** It can also mean wrong tissue compartment, weak perturbation, bad timing, or overwhelming composition changes.
+10. **Treating every downstream method as mandatory.** Most projects do not need PREDA, WGCNA, and every scoring layer all at once.
+
+### What to do when signal is weak or libraries look bad
+
+- Re-check sample labels and metadata first.
+- Re-check strandedness and annotation consistency.
+- Inspect gene-body coverage and read distribution.
+- Ask whether the perturbation timing or tissue compartment was wrong.
+- Look at known positive-control genes or pathways before declaring failure.
+- Consider that composition shifts may dominate weak within-cell-state changes.
+- If everything depends on rare populations or spatial structure, bulk may not be the right assay.
+
+### Interpretation pitfalls
+
+<Callout title="Interpretation principle" tone="warning">
+  <p>Expression changes reflect what cells are responding to or attempting, not necessarily what is functionally occurring.</p>
+</Callout>
+
+This final list focuses on interpretation traps that still matter even after you have already checked for technical structure and composition effects.
+
+1. **Compensatory versus functional change.** Upregulation does not imply more function. It may reflect compensation after stress, damage, or failed homeostasis.
+2. **Structure versus expression mismatch.** Higher mRNA does not guarantee correct protein structure, localization, or tissue architecture.
+3. **Stress and injury responses are nonspecific.** Hypoxia, inflammation, interferon, EMT-like programs, and immediate-early responses are reused across many contexts.
+4. **Pathway redundancy.** Overlapping gene sets can make several pathways look independently significant when they really reflect one underlying program.
+5. **Directionality ambiguity.** Up or down does not automatically define activation, inhibition, or biological outcome.
+6. **mRNA is not protein and not function.** Translation, post-translational regulation, localization, and turnover matter.
+7. **Temporal ambiguity.** A single time point cannot cleanly separate cause from consequence.
+8. **Reverse causality.** Especially in tumor and inflammatory settings, observed changes may be downstream responses rather than drivers.
+9. **Signatures are not mechanisms.** Enrichment indicates similarity to a known program, not mechanistic activation.
+10. **Cross-species limitations.** Mouse-to-human ortholog mapping loses nuance and sometimes meaning.
+
+## Final recommended path
+
+If you want the shortest honest recommendation:
+
+1. Design the experiment around the biological question, not around whichever downstream package you hope to use.
+2. For most human and mouse bulk RNA-seq projects, use **stranded poly(A)** if RNA quality is good and the question is coding-gene expression.
+3. Start every dataset with **FastQC + MultiQC**, then add **RSeQC**, **RNA-SeQC**, or **Picard** when RNA-specific sanity checks matter.
+4. Use **Salmon + tximport + tximeta** for expression-first work.
+5. Use **STAR** when you genuinely need genome-aware analyses.
+6. Use **DESeq2** for gene-level DE, then add **lfc shrinkage**, the right flavor of **enrichment analysis**, **PROGENy**, **decoupleR/DoRothEA**, and a conservative cell-context layer.
+7. Treat genome-aware regional analysis as a targeted follow-up when the biological question justifies it, not as a default decoration.
+8. Pick downstream methods based on the biological question they answer, not because they are popular on other people's RNA-seq figures.

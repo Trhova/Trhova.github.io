@@ -2,6 +2,7 @@ import Link from "next/link";
 
 import profile from "@/data/profile.json";
 import { Container } from "@/components/Container";
+import { GuidesMenu } from "@/components/GuidesMenu";
 import { ThemeToggle } from "@/components/ThemeToggle";
 
 function NavLink({ href, children }: { href: string; children: string }) {
@@ -29,6 +30,7 @@ export function SiteNav() {
           <nav className="hidden items-center gap-1 text-sm md:flex">
             <NavLink href="/">Home</NavLink>
             <NavLink href="/writing">Writing</NavLink>
+            <GuidesMenu />
             <NavLink href="/publications">Publications</NavLink>
             <NavLink href="/links">Links</NavLink>
             <NavLink href="/inspirations">Inspirations</NavLink>
