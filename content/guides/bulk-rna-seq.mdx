@@ -534,46 +534,33 @@ dds <- DESeq(dds)
   <p>Use this as a checkpoint: is the signal most consistent with technical structure, a generic stress program, a composition shift, or a plausible biology-first effect that deserves deeper follow-up?</p>
 </Callout>
 
-### Minimum viable analysis vs deep dive
+### Downstream layers after DE
 
-<ScrollTable>
-  <table>
-    <thead>
-      <tr>
-        <th>Mode</th>
-        <th>What it should include</th>
-        <th>Use this when</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td>Minimum viable analysis</td>
-        <td>Trusted metadata and design, FASTQ QC, trustworthy quantification and count table, DESeq2 or a justified equivalent, one sensible enrichment layer such as ranked-list enrichment, and manual inspection of a few biologically relevant genes or signatures</td>
-        <td>This is enough for most studies that mainly want robust differential expression and a reasonable biological summary</td>
-      </tr>
-      <tr>
-        <td>Deep dive</td>
-        <td>TF activity, pathway activity versus pathway membership, sample-level scoring and heterogeneity, cell-context inference, and genome-aware regional interpretation when the biological question genuinely needs more resolution</td>
-        <td>Use this when the core analysis is solid and the study genuinely needs more regulatory, compositional, or genome-position-aware resolution</td>
-      </tr>
-    </tbody>
-  </table>
-</ScrollTable>
+Once the DE result is credible, move upward in interpretation one layer at a time. Start with individual genes, then ask whether coherent gene sets shift, then whether individual samples carry programs, then whether those programs imply signaling or regulatory activity, and finally whether the bulk profile may reflect changing tissue composition.
 
-### Beyond DEGs: what question are you actually asking?
+### Gene-level
 
-This is where most people either gain biological traction or start over-interpreting weak data. Start with ranked gene lists and effect sizes you trust. Pathway-level summaries can be more stable than single-gene thresholding, especially in moderately powered studies, but they do not rescue a weak design, mislabeled samples, or a broken count table. Then layer summaries that answer different questions.
+This is the anchor layer. Differential expression tells you which genes move and by how much. Everything that follows should be read as an interpretation layered on top of that gene-level result, not as a substitute for it.
 
-### Enrichment analysis
+Stay here until you trust:
 
-This is the first downstream layer most people should add after DE. The main mistake is treating `ORA`, `GSEA`, `ssGSEA`, and pathway-activity models as if they answer the same question. They do not.
+- the contrast and design formula
+- the effect sizes and shrinkage behavior
+- the sample structure and batch handling
+- a few manually inspected genes that fit the biology you think you are seeing
+
+Once you have a ranked gene-level result you believe, the next shift is from individual genes to coordinated programs.
+
+### Gene set-level
+
+This is the first abstraction step. Instead of asking whether one gene is up or down, ask whether a pathway or process moves as a coherent set.
 
 <ScrollTable>
   <table>
     <thead>
       <tr>
         <th>Method</th>
-        <th>Main question it answers</th>
+        <th>Main question</th>
         <th>Best input</th>
         <th>Use it when</th>
         <th>Main limitation</th>
@@ -582,74 +569,21 @@ This is the first downstream layer most people should add after DE. The main mis
     <tbody>
       <tr>
         <td>ORA</td>
-        <td>Which pathways or processes are over-represented in my chosen DEG list?</td>
+        <td>Which processes are over-represented in my chosen DEG list?</td>
         <td>A thresholded gene list</td>
         <td>You want a simple summary of a clear DEG set</td>
-        <td>Depends heavily on the threshold you chose</td>
+        <td>Strongly depends on the threshold used to define DEGs</td>
       </tr>
       <tr>
-        <td>GSEA or fgsea</td>
-        <td>Do genes from a pathway shift toward the top or bottom of the full ranked result, even if few pass a hard cutoff?</td>
+        <td>GSEA / fgsea</td>
+        <td>Do genes from a pathway shift across the full ranked result even if few genes pass a hard cutoff?</td>
         <td>A ranked vector across all tested genes</td>
-        <td>You do not want to throw away sub-threshold structure</td>
+        <td>You want to preserve sub-threshold structure and avoid arbitrary thresholding</td>
         <td>Still depends on the quality and relevance of the gene-set collection</td>
-      </tr>
-      <tr>
-        <td>ssGSEA or GSVA</td>
-        <td>Which pathways vary across individual samples rather than only between groups?</td>
-        <td>A normalized expression matrix</td>
-        <td>The sample is the unit of interest, for example subtype structure or responder versus non-responder patterns</td>
-        <td>Scores are relative and not the same thing as direct pathway activity</td>
-      </tr>
-      <tr>
-        <td>PROGENy</td>
-        <td>Which signaling pathways appear active based on downstream transcriptional footprints?</td>
-        <td>A normalized expression matrix</td>
-        <td>You want pathway activity estimates rather than simple membership overlap</td>
-        <td>Limited to the pathways modeled by the resource</td>
       </tr>
     </tbody>
   </table>
 </ScrollTable>
-
-Use these methods to ask different kinds of questions:
-
-- **ORA**: "Among the genes I am willing to call DE, what kinds of processes are over-represented?"
-- **GSEA / fgsea**: "Even if I do not trust an arbitrary DEG cutoff, do coherent programs move up or down across the ranked result?"
-- **ssGSEA / GSVA**: "Which samples look pathway-high or pathway-low, and does that explain phenotype, subtype, batch, or hidden heterogeneity?"
-- **PROGENy**: "Do the expression changes look like downstream consequences of a signaling pathway being active?"
-
-### Gene-set choice can change the story
-
-Different gene-set collections can yield different biological conclusions from the same data. That does not automatically mean one result is wrong. It often means the resources encode different biological priors, pathway definitions, levels of granularity, curation styles, and historical biases.
-
-<Callout title="Gene-set dependence is real" tone="warning">
-  <p><strong>Hallmark</strong>, <strong>Reactome</strong>, <strong>GO</strong>, and cell-type signature resources can all produce meaningfully different enrichment results on the same ranked list. Hallmarks are still useful because they are compact and interpretable, but they are not universal truth and should not be treated as the sole reference universe.</p>
-  <p>Enrichment results should be framed as interpretations conditional on the chosen gene-set universe, not as absolute representations of biology. Convergence across multiple resources is often more convincing than any single enrichment run, and users should avoid overclaiming from one preferred collection.</p>
-</Callout>
-
-<MethodCard
-  title="Enrichment analysis default"
-  defaultTool="fgsea for ranked-list enrichment, with ORA and sample-level scoring as complementary layers"
-  useWhen="You have a DE result or ranked vector and want to move from gene-by-gene results to pathway-level interpretation without pretending every method answers the same question."
-  inputs={["A thresholded DEG list for ORA, a ranked full-gene vector for GSEA, or a normalized expression matrix for sample-level scoring", "Gene sets matched to species and identifier type", "A concrete question about process enrichment, sample variation, or pathway activity"]}
-  outputs={["Enrichment scores, p-values, normalized enrichment scores, or per-sample pathway scores", "Leading-edge genes or pathway-level summaries", "A more interpretable pathway view of the experiment"]}
-  alternatives={["clusterProfiler for ORA and wrapper workflows", "GSVA or ssGSEA for per-sample scores", "PROGENy for pathway-footprint activity scoring"]}
-  switchWhen="Use ORA when you want a quick, thresholded DEG summary. Use fgsea when you want a more stable ranked-list method. Use GSVA or ssGSEA when the sample is the unit of interest. Use PROGENy when you want pathway activity inferred from responsive genes rather than plain membership overlap."
-  pros={["Lets you summarize the result at the process level", "fgsea is fast and practical", "Different enrichment frameworks let you match the method to the biological question"]}
-  cons={["Gene-set choice often matters more than the code", "Ortholog mapping can distort signal", "Enrichment is descriptive support, not proof of mechanism"]}
-  gotcha="The wrong question produces the wrong method. Using ORA when the real question is sample heterogeneity, or using GSVA when the real question is ranked perturbation response, usually makes the result feel muddy for good reason."
-  goodOutput="Top hits fit the experimental context, leading-edge genes are biologically recognizable, and the result is specific enough to guide the next interpretive step rather than producing a giant bag of vaguely related terms."
-  docs={[
-    { label: "fgsea", href: "https://bioconductor.org/packages/fgsea" },
-    { label: "clusterProfiler", href: "https://bioconductor.org/packages/clusterProfiler" },
-    { label: "GSVA", href: "https://bioconductor.org/packages/GSVA" }
-  ]}
-  papers={[
-    { label: "Subramanian et al. 2005, GSEA", href: "https://doi.org/10.1073/pnas.0506580102" },
-    { label: "Hänzelmann et al. 2013, GSVA", href: "https://doi.org/10.1186/1471-2105-14-7" }
-  ]}
-/>
 
 ```r
 library(fgsea)
@@ -674,6 +608,58 @@ ora <- enrichGO(
 )
 ```
 
+<Callout title="Gene-set dependence is real" tone="warning">
+  <p><strong>Hallmark</strong>, <strong>Reactome</strong>, <strong>GO</strong>, and cell-type signature resources can all produce different interpretations from the same ranked list. That does not automatically mean one is wrong; it means the gene-set universe is part of the analysis.</p>
+  <p>Frame enrichment results as interpretations conditional on the chosen resource, and look for convergence across more than one sensible collection before making strong claims.</p>
+</Callout>
+
+ORA and GSEA still summarize the group-level contrast. If the next question is whether individual samples carry a program strongly or weakly, move from gene sets to per-sample scores.
+
+### Sample-level pathway activity
+
+Here the unit of interpretation shifts from the contrast to the sample. `GSVA` and `ssGSEA` turn a normalized expression matrix into per-sample pathway scores, which is useful when heterogeneity, subtype structure, responder patterns, or outlier biology matter.
+
+<ScrollTable>
+  <table>
+    <thead>
+      <tr>
+        <th>Method</th>
+        <th>Main question</th>
+        <th>Best input</th>
+        <th>Use it when</th>
+        <th>Main limitation</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>GSVA</td>
+        <td>Which pathways vary smoothly across samples?</td>
+        <td>A normalized expression matrix</td>
+        <td>You want continuous per-sample pathway scores for clustering, correlation, or phenotype association</td>
+        <td>Scores are relative summaries, not direct proof of pathway activity</td>
+      </tr>
+      <tr>
+        <td>ssGSEA</td>
+        <td>Which samples look signature-high or signature-low?</td>
+        <td>A normalized expression matrix</td>
+        <td>You want a simple rank-based per-sample score for pathway or signature burden</td>
+        <td>Depends on signature quality and can be sensitive to broad expression shifts</td>
+      </tr>
+    </tbody>
+  </table>
+</ScrollTable>
+
+Use this same layer for cell state or functional state scoring. In practice that means scoring signatures such as:
+
+- cell cycle
+- proliferation
+- hypoxia
+- EMT
+- interferon response
+- stress or injury programs
+
+These are still sample-level summaries. They tell you which samples carry a program, not yet which upstream regulator or pathway driver caused it.
+
 ```r
 library(GSVA)
 
@@ -684,152 +670,62 @@ ssgsea_scores <- gsva(
 )
 ```
 
-<Callout title="Gene-set choice matters more than most people admit" tone="warning">
-  <p>MSigDB Hallmarks are still useful because they are compact, interpretable, and deliberately less redundant, but they are not the only sensible universe. The Hallmark collection was introduced in 2015, while MSigDB itself continues to ship current releases, including human release <strong>v2026.1.Hs</strong> updated in <strong>January 2026</strong>.</p>
-  <p>If you want broader or more recently refreshed collections, look beyond Hallmarks to current MSigDB collections such as Reactome, GO, C8 cell-type signatures, and curated signatures, or to the <a href="https://baderlab.org/GeneSets">BaderLab GeneSets</a> resource, which states that its GMT collections are updated monthly from source resources. The same dataset can look inflammatory in one collection, developmental in another, and cell-composition-driven in a third, so the gene-set universe is part of the interpretation, not a neutral background detail.</p>
-</Callout>
+Once you have sample-level programs, the next shift is from descriptive scoring to inferred upstream drivers.
 
-### TF activity, pathway activity, sample-level scoring, genome-aware analysis, and network context
+### Regulatory / signaling inference
+
+This layer asks what might be driving the expression pattern rather than just describing it. `PROGENy` estimates signaling pathway activity from downstream responsive genes, while `DoRothEA + VIPER` estimates transcription factor activity from coordinated target-gene behavior.
 
 <ScrollTable>
   <table>
     <thead>
       <tr>
-        <th>Method layer</th>
-        <th>What it does</th>
-        <th>What biological question it answers</th>
-        <th>When to use it</th>
-        <th>Key limitation</th>
+        <th>Method</th>
+        <th>Main question</th>
+        <th>Best input</th>
+        <th>Use it when</th>
+        <th>Main limitation</th>
       </tr>
     </thead>
     <tbody>
       <tr>
-        <td>TF activity<br />`decoupleR + DoRothEA`</td>
-        <td>Infers regulator activity from the coordinated behavior of known target genes, rather than from TF expression alone.</td>
-        <td>Which upstream transcriptional regulators best explain the observed expression pattern?</td>
-        <td>Use it when you want to move from DE genes to plausible regulatory drivers.</td>
-        <td>Depends on the quality and context-relevance of the regulator-target network.</td>
+        <td>PROGENy</td>
+        <td>Do the data look like downstream consequences of a signaling pathway being active?</td>
+        <td>A normalized expression matrix</td>
+        <td>You care about pathway activity rather than simple overlap with pathway members</td>
+        <td>Limited to the pathways modeled by the resource</td>
       </tr>
       <tr>
-        <td>Pathway activity<br />`PROGENy`</td>
-        <td>Uses pathway-responsive genes to estimate signaling activity instead of simple overlap with pathway members.</td>
-        <td>Do the data look like downstream consequences of a pathway being active?</td>
-        <td>Use it when signaling activity is more interesting than pathway membership.</td>
-        <td>Only covers pathways modeled by the resource and is still an inferred activity layer.</td>
-      </tr>
-      <tr>
-        <td>Sample-level scoring<br />`GSVA / ssGSEA`</td>
-        <td>Scores pathways or signatures per sample so you can compare samples directly rather than only group contrasts.</td>
-        <td>Which samples carry a program strongly, and does that explain heterogeneity or subtype structure?</td>
-        <td>Use it when the sample is the main unit of interest.</td>
-        <td>Scores are relative summaries, not direct proof that a pathway is active.</td>
-      </tr>
-      <tr>
-        <td>Genome-aware regional analysis<br />`PREDA`</td>
-        <td>Maps gene-level statistics onto genomic coordinates and looks for spatially clustered signal across the genome.</td>
-        <td>Are expression changes spatially organized along the genome?</td>
-        <td>Use it when you suspect chromosomal domains, broad regulatory regions, or structure-linked effects.</td>
-        <td>It is hypothesis-generating and works best when coordinate-level organization is biologically plausible.</td>
-      </tr>
-      <tr>
-        <td>Network context<br />`STRINGdb`</td>
-        <td>Places prioritized genes into known interaction neighborhoods and connected modules.</td>
-        <td>Do my prioritized genes form coherent biological neighborhoods or hub-centered modules?</td>
-        <td>Use it when you want a structured network view of the signal.</td>
-        <td>Network connectivity can amplify annotation popularity and literature bias.</td>
-      </tr>
-      <tr>
-        <td>Cell composition / context<br />`xCell2`, `MuSiC`, `CIBERSORTx`, `mMCP-counter`</td>
-        <td>Estimates tissue context, enrichment, or composition-like shifts from bulk profiles.</td>
-        <td>Is the bulk signal driven by who is in the sample, what state those cells are in, or both?</td>
-        <td>Use it when mixture effects are a plausible explanation for the DE pattern.</td>
-        <td>Reference mismatch and composition-versus-state ambiguity remain major limits.</td>
+        <td>DoRothEA + VIPER</td>
+        <td>Which transcription factors best explain the observed expression pattern?</td>
+        <td>A normalized expression matrix plus a TF-target network</td>
+        <td>You want plausible upstream regulatory drivers rather than TF expression alone</td>
+        <td>Depends heavily on regulon quality and context relevance</td>
       </tr>
     </tbody>
   </table>
 </ScrollTable>
 
-Practical defaults:
-
-- Use **decoupleR + DoRothEA** when the question is upstream regulation.
-- Use **PROGENy** when the question is pathway activity rather than pathway membership.
-- Use **GSVA** or **ssGSEA** when the sample, not the contrast, is the main unit of interest.
-- Use **PREDA** when you want to know whether the signal is spatially organized along chromosomes rather than only grouped by pathway membership.
-- Use **STRINGdb** when you want to see whether prioritized genes form a connected biological neighborhood.
-- Use the cell-context methods when composition shifts are a plausible explanation for the signal.
-
 ```r
-library(decoupleR)
 library(progeny)
-library(GSVA)
 
-# Example shape: genes x samples matrix
-scores <- progeny(vst_mat, scale = TRUE, organism = "Human", top = 500)
+pathway_scores <- progeny(vst_mat, scale = TRUE, organism = "Human", top = 500)
 ```
-
-```python
-import pandas as pd
-import decoupler as dc
-
-expr = pd.read_parquet("exports/vst_matrix.parquet")
-net = dc.get_dorothea(organism="human", levels=["A", "B", "C"])
-tf_scores = dc.run_ulm(mat=expr.T, net=net, source="source", target="target", weight="weight")
-```
-
-### Genome-aware visualization and positional analysis
-
-This is not a separate data type or a completely different workflow. It is another way of interpreting the same differential-expression signal by asking where it sits along the genome rather than only which pathway list it overlaps.
-
-<MethodCard
-  title="Genome-aware regional interpretation"
-  defaultTool="PREDA"
-  useWhen="You want to know whether the differential-expression signal is spatially organized along the genome rather than dispersed gene by gene."
-  inputs={["Gene-level statistics such as log2 fold change, Wald statistic, or other signed DE summaries", "Genomic coordinates for the tested genes", "A biologically plausible reason to care about regional organization, such as chromatin state, copy-number effects, or domain-level regulation"]}
-  outputs={["Smoothed genome-wide signal tracks", "Genomic regions showing clustered up- or downregulation", "Region-level hypotheses for follow-up interpretation"]}
-  alternatives={["Gviz or IGV for focused coordinate-level visualization", "deepTools for metagene and coverage summaries when BAM or bigWig files are available", "Simple chromosome-level summary plots when you only need exploratory context"]}
-  switchWhen="Use Gviz or IGV when you already know the loci you want to inspect. Use deepTools when the question is coverage shape or metagene behavior. Use PREDA when the real question is whether expression changes are regionally clustered and non-random along the genome."
-  pros={["Directly tests whether expression changes are spatially organized along chromosomes", "Useful for detecting coordinated regulation across genomic regions", "Can generate hypotheses about chromatin organization, epigenetic control, or copy-number-linked effects in appropriate contexts"]}
-  cons={["More interpretive than routine DE follow-up", "Signal can be noisy if the underlying gene-level statistics are weak", "Best viewed as a hypothesis-generating layer rather than standalone proof of mechanism"]}
-  gotcha="A PREDA hit is not automatically a copy-number event or chromatin domain. It tells you that nearby genes are behaving in a coordinated way more than expected, and that pattern still needs biological interpretation."
-  goodOutput="You see coherent up- or downregulated chromosomal regions rather than isolated scattered hits, and the detected regions fit a plausible story about domain-level regulation, chromatin structure, or structural variation in the biological context."
-  docs={[
-    { label: "PREDA", href: "https://bioconductor.org/packages/PREDA" },
-    { label: "Gviz", href: "https://bioconductor.org/packages/Gviz" },
-    { label: "deepTools", href: "https://deeptools.readthedocs.io/en/develop/" }
-  ]}
-  papers={[
-    { label: "Ferrari et al. 2011, PREDA", href: "https://doi.org/10.1093/bioinformatics/btr455" }
-  ]}
-/>
-
-PREDA is useful when you want to ask a different question from standard DE:
-
-- Are up- or downregulated genes clustering into genomic neighborhoods rather than appearing as isolated hits?
-- Do chromosomal domains seem to behave together?
-- Could the pattern reflect broad regulatory effects such as chromatin-level regulation, domain organization, or structural effects?
-- In the right contexts, especially cancer, could the spatial pattern suggest copy-number-linked effects worth testing more directly?
-
-Conceptually, PREDA does three things:
-
-1. Takes gene-level statistics such as log2 fold change or a DE test statistic and maps them onto genomic coordinates.
-2. Applies smoothing across the genome so that nearby signals contribute to a regional pattern rather than being treated as isolated points.
-3. Detects non-random regional clustering of signal, highlighting chromosomal segments where the expression pattern appears spatially organized.
 
 ```r
-library(PREDA)
+library(dorothea)
+library(viper)
 
-# Pseudocode outline: build a position-related object using gene-level statistics
-# and genomic coordinates, then run PREDA smoothing and region detection.
-
-# ge_table should contain: chromosome, genomic start, genomic end, statistic
-# such as shrunken log2FC or Wald statistic.
+data(dorothea_hs, package = "dorothea")
+regulon <- subset(dorothea_hs, confidence %in% c("A", "B", "C"))
+tf_scores <- viper(vst_mat, regulon, method = "scale")
 ```
 
-### Cell composition and tissue context
+These methods still assume the bulk profile is mostly reflecting state within the sampled mixture. If the mixture itself is changing, apparent pathways or TFs may partly be composition effects rather than cell-intrinsic regulation.
 
-Treat these methods as context estimators, not truth oracles.
+### Tissue composition
 
-This section exists to test one of the main ambiguities in bulk RNA-seq: is the signal driven by who is in the sample, what state those cells are in, or both? If you skip that question, it becomes very easy to tell a cell-intrinsic story about what is really a mixture-level shift.
+This is the mixture layer. Here the question shifts from what programs are active to who is present in the sample. In bulk RNA-seq, that distinction matters because apparent inflammation, stromal biology, or differentiation can reflect changing proportions rather than changed state within one cell type.
 
 <ScrollTable>
   <table>
@@ -839,37 +735,37 @@ This section exists to test one of the main ambiguities in bulk RNA-seq: is the 
         <th>Best framed as</th>
         <th>Needs reference?</th>
         <th>Best use case</th>
-        <th>Important caution</th>
+        <th>Main caution</th>
       </tr>
     </thead>
     <tbody>
       <tr>
         <td><a href="https://github.com/dviraran/xCell2">xCell2</a></td>
-        <td>Enrichment or context score</td>
+        <td>Enrichment or tissue-context score</td>
         <td>No matched single-cell reference required</td>
-        <td>Quick tissue-context inference when you want a broad human-oriented enrichment layer</td>
-        <td>Better as enrichment than absolute proportion estimation; human-centric resources need caution in mouse</td>
+        <td>Quick context readout when you want a broad enrichment-style estimate</td>
+        <td>Better for relative context than absolute proportions</td>
       </tr>
       <tr>
-        <td><a href="https://xuranw.github.io/MuSiC/articles/MuSiC.html">MuSiC</a></td>
-        <td>Composition estimation</td>
+        <td><a href="https://www.bioconductor.org/packages/release/bioc/html/EPIC.html">EPIC</a></td>
+        <td>Reference-based deconvolution</td>
         <td>Yes</td>
-        <td>You have a biologically matched single-cell reference from similar tissue or condition</td>
-        <td>Reference mismatch will dominate the result</td>
+        <td>Human bulk data where the reference assumptions fit the tissue reasonably well</td>
+        <td>Reference mismatch can dominate the result</td>
       </tr>
       <tr>
         <td><a href="https://cibersortx.stanford.edu/">CIBERSORTx</a></td>
         <td>Proportion-style deconvolution</td>
         <td>Usually yes</td>
-        <td>When a compatible signature matrix or reference exists and the tissue context is close</td>
-        <td>Model assumptions are context-specific; portability is limited</td>
+        <td>When a compatible signature matrix exists and transfers plausibly to your tissue</td>
+        <td>Portability across contexts is limited</td>
       </tr>
       <tr>
-        <td><a href="https://github.com/cit-bioinfo/mMCP-counter">mMCP-counter</a></td>
-        <td>Enrichment or abundance-like score</td>
-        <td>No matched single-cell reference required</td>
-        <td>Mouse studies needing a mouse-aware immune and stromal context layer</td>
-        <td>Do not compare its output scale directly to human-only methods</td>
+        <td><a href="https://xuranw.github.io/MuSiC/articles/MuSiC.html">MuSiC</a></td>
+        <td>Composition estimation</td>
+        <td>Yes</td>
+        <td>You have a genuinely matched single-cell reference from similar tissue and condition</td>
+        <td>A mismatched reference can make the output look precise but wrong</td>
       </tr>
     </tbody>
   </table>
@@ -877,13 +773,15 @@ This section exists to test one of the main ambiguities in bulk RNA-seq: is the 
 
 Recommended practical default:
 
-- Start with **xCell2** or **mMCP-counter** for a conservative enrichment-style tissue-context readout.
-- Switch to **MuSiC** when you have a genuinely matched single-cell reference and want proportion-aware estimation.
-- Use **CIBERSORTx** when the signature model is known to transfer to your context, not because it is famous.
+- start with **xCell2** for a conservative context readout
+- use **EPIC** or **CIBERSORTx** when the reference assumptions fit the biological system
+- use **MuSiC** when you have a truly matched single-cell reference and want proportion-aware estimation
 
 <Callout title="Cell composition versus cell state" tone="warning">
-  <p>A higher immune or stromal signature can mean more cells of that type, the same cells in a different state, or both. Use these methods to stress-test your interpretation, not to declare exact ground truth from bulk alone.</p>
+  <p>A higher immune, stromal, or EMT-like signal can mean more cells of that type, the same cells in a different state, or both. Use deconvolution to stress-test your interpretation, not to declare exact ground truth from bulk alone.</p>
 </Callout>
+
+At this point you should know whether your story is mainly gene-level, program-level, sample-state-level, regulatory, or compositional. Specialized coordinate-aware or network follow-up can still be useful, but they should come after one of these core layers has already sharpened the biological question.
 
 ### Targeted panels and ortholog sanity checks
 
@@ -912,7 +810,7 @@ This section is intentionally blunt. Most bulk RNA-seq pain comes from a small s
 7. **Short reads for coordinate-aware questions.** If the goal is genome-aware interpretation or positional follow-up, cheap short single-end data are often the real limitation.
 8. **rRNA contamination denial.** High rRNA fractions are not just annoying; they waste depth and can indicate library problems.
 9. **Assuming weak signal means no biology.** It can also mean wrong tissue compartment, weak perturbation, bad timing, or overwhelming composition changes.
-10. **Treating every downstream method as mandatory.** Most projects do not need PREDA, WGCNA, and every scoring layer all at once.
+10. **Treating every downstream method as mandatory.** Most projects do not need every specialized scoring, regional, and network layer all at once.
 
 ### What to do when signal is weak or libraries look bad
 
@@ -952,6 +850,6 @@ If you want the shortest honest recommendation:
 3. Start every dataset with **FastQC + MultiQC**, then add **RSeQC**, **RNA-SeQC**, or **Picard** when RNA-specific sanity checks matter.
 4. Use **Salmon + tximport + tximeta** for expression-first work.
 5. Use **STAR** when you genuinely need genome-aware analyses.
-6. Use **DESeq2** for gene-level DE, then add **lfc shrinkage**, the right flavor of **enrichment analysis**, **PROGENy**, **decoupleR/DoRothEA**, and a conservative cell-context layer.
+6. Use **DESeq2** for gene-level DE, then add **lfc shrinkage**, the right flavor of **gene-set analysis**, one sensible **regulatory inference** layer, and a conservative **cell-context** layer.
 7. Treat genome-aware regional analysis as a targeted follow-up when the biological question justifies it, not as a default decoration.
 8. Pick downstream methods based on the biological question they answer, not because they are popular on other people's RNA-seq figures.
