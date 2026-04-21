@@ -3,78 +3,175 @@
 import { useEffect, useMemo, useState } from "react";
 
 import type { GuideHeading } from "@/lib/guides";
+import { getGuidePresentation } from "@/lib/guidePresentation";
 
 function useActiveHeading(headings: GuideHeading[]) {
   const [activeId, setActiveId] = useState(headings[0]?.slug ?? "");
 
   useEffect(() => {
-    const elements = headings
-      .map((heading) => document.getElementById(heading.slug))
-      .filter((element): element is HTMLElement => Boolean(element));
+    const items = headings
+      .map((heading) => ({
+        heading,
+        element: document.getElementById(heading.slug)
+      }))
+      .filter(
+        (item): item is { element: HTMLElement; heading: GuideHeading } =>
+          Boolean(item.element)
+      );
 
-    if (elements.length === 0) return;
+    if (items.length === 0) return;
+
+    const updateActiveHeading = () => {
+      const offset = 160;
+      let nextActiveId = items[0]?.heading.slug ?? "";
+
+      for (const item of items) {
+        if (item.element.getBoundingClientRect().top <= offset) {
+          nextActiveId = item.heading.slug;
+        } else {
+          break;
+        }
+      }
+
+      setActiveId(nextActiveId);
+    };
+
+    updateActiveHeading();
 
     const observer = new IntersectionObserver(
-      (entries) => {
-        const visible = entries
-          .filter((entry) => entry.isIntersecting)
-          .sort(
-            (left, right) =>
-              left.boundingClientRect.top - right.boundingClientRect.top
-          );
-
-        if (visible[0]?.target.id) {
-          setActiveId(visible[0].target.id);
-        }
-      },
+      () => updateActiveHeading(),
       {
-        rootMargin: "-15% 0px -70% 0px",
+        rootMargin: "-20% 0px -65% 0px",
         threshold: [0, 1]
       }
     );
 
-    elements.forEach((element) => observer.observe(element));
-    return () => observer.disconnect();
+    items.forEach((item) => observer.observe(item.element));
+    window.addEventListener("scroll", updateActiveHeading, { passive: true });
+    window.addEventListener("resize", updateActiveHeading);
+
+    return () => {
+      observer.disconnect();
+      window.removeEventListener("scroll", updateActiveHeading);
+      window.removeEventListener("resize", updateActiveHeading);
+    };
   }, [headings]);
 
   return activeId;
 }
 
-function NavList({
+type WorkflowStep = {
+  children: GuideHeading[];
+  heading: GuideHeading;
+};
+
+function buildWorkflowSteps(headings: GuideHeading[]) {
+  const steps: WorkflowStep[] = [];
+  let currentStep: WorkflowStep | null = null;
+
+  for (const heading of headings) {
+    if (heading.depth === 2) {
+      currentStep = {
+        heading,
+        children: []
+      };
+      steps.push(currentStep);
+      continue;
+    }
+
+    if (heading.depth === 3 && currentStep) {
+      currentStep.children.push(heading);
+    }
+  }
+
+  return steps;
+}
+
+function scrollToHeading(slug: string) {
+  document.getElementById(slug)?.scrollIntoView({
+    behavior: "smooth",
+    block: "start"
+  });
+  window.history.replaceState(null, "", `#${slug}`);
+}
+
+function StepList({
   activeId,
-  headings
+  steps
 }: {
   activeId: string;
-  headings: GuideHeading[];
+  steps: WorkflowStep[];
 }) {
+  const activeStepIndex = steps.findIndex(
+    (step) =>
+      step.heading.slug === activeId ||
+      step.children.some((child) => child.slug === activeId)
+  );
+
   return (
-    <ol className="space-y-1.5">
-      {headings.map((heading) => {
-        const isActive = activeId === heading.slug;
+    <ol className="relative space-y-4 before:absolute before:bottom-2 before:left-3.5 before:top-2 before:w-px before:bg-border">
+      {steps.map((step, index) => {
+        const isActiveStep =
+          index === (activeStepIndex === -1 ? 0 : activeStepIndex);
+        const isCompletedStep =
+          activeStepIndex !== -1 && index < activeStepIndex;
 
         return (
-          <li
-            key={heading.slug}
-            className={heading.depth === 3 ? "pl-4" : ""}
-          >
+          <li key={step.heading.slug} className="relative pl-10">
+            <span
+              aria-hidden="true"
+              className={[
+                "absolute left-[0.35rem] top-2.5 h-6 w-6 rounded-full border-2 bg-surface transition",
+                isActiveStep
+                  ? "border-accent bg-accent/15"
+                  : isCompletedStep
+                    ? "border-accent/60 bg-accent/10"
+                    : "border-border bg-surface2"
+              ].join(" ")}
+            />
             <a
-              href={`#${heading.slug}`}
+              href={`#${step.heading.slug}`}
               onClick={(event) => {
                 event.preventDefault();
-                document
-                  .getElementById(heading.slug)
-                  ?.scrollIntoView({ behavior: "smooth", block: "start" });
-                window.history.replaceState(null, "", `#${heading.slug}`);
+                scrollToHeading(step.heading.slug);
               }}
               className={[
-                "block rounded-lg px-2 py-1 text-sm leading-6 transition",
-                isActive
+                "block rounded-xl px-3 py-2 text-sm leading-6 transition",
+                isActiveStep
                   ? "bg-surface2 font-medium text-text"
                   : "text-muted hover:bg-surface2 hover:text-text"
               ].join(" ")}
             >
-              {heading.text}
+              {step.heading.text}
             </a>
+
+            {isActiveStep && step.children.length > 0 ? (
+              <ol className="mt-2 space-y-1 border-l border-border/80 pl-4">
+                {step.children.map((child) => {
+                  const isActiveChild = child.slug === activeId;
+
+                  return (
+                    <li key={child.slug}>
+                      <a
+                        href={`#${child.slug}`}
+                        onClick={(event) => {
+                          event.preventDefault();
+                          scrollToHeading(child.slug);
+                        }}
+                        className={[
+                          "block rounded-lg px-2 py-1 text-xs leading-5 transition",
+                          isActiveChild
+                            ? "bg-accent/10 font-medium text-text"
+                            : "text-muted hover:bg-surface2 hover:text-text"
+                        ].join(" ")}
+                      >
+                        {child.text}
+                      </a>
+                    </li>
+                  );
+                })}
+              </ol>
+            ) : null}
           </li>
         );
       })}
@@ -83,28 +180,48 @@ function NavList({
 }
 
 export function OnPageNav({
+  currentSlug,
   headings,
   mode
 }: {
+  currentSlug: string;
   headings: GuideHeading[];
   mode: "desktop" | "mobile";
 }) {
+  const workflowSubsectionSlugs = useMemo(() => {
+    const sectionMap = getGuidePresentation(currentSlug)?.sections ?? {};
+    return new Set(Object.keys(sectionMap));
+  }, [currentSlug]);
+
   const items = useMemo(
     () => headings.filter((heading) => heading.depth <= 3),
     [headings]
   );
+  const steps = useMemo(
+    () =>
+      buildWorkflowSteps(items).map((step) => ({
+        ...step,
+        children:
+          workflowSubsectionSlugs.size > 0
+            ? step.children.filter((child) =>
+                workflowSubsectionSlugs.has(child.slug)
+              )
+            : step.children
+      })),
+    [items, workflowSubsectionSlugs]
+  );
   const activeId = useActiveHeading(items);
 
-  if (items.length === 0) return null;
+  if (steps.length === 0) return null;
 
   if (mode === "mobile") {
     return (
       <details className="guide-panel lg:hidden">
         <summary className="cursor-pointer list-none px-5 py-4 text-sm font-semibold uppercase tracking-[0.16em] text-accent">
-          On this page
+          Analysis workflow
         </summary>
         <div className="border-t border-border px-4 pb-4 pt-2">
-          <NavList activeId={activeId} headings={items} />
+          <StepList activeId={activeId} steps={steps} />
         </div>
       </details>
     );
@@ -113,9 +230,9 @@ export function OnPageNav({
   return (
     <div className="guide-panel sticky top-24 max-h-[calc(100vh-7rem)] overflow-y-auto p-4">
       <div className="mb-4 text-xs font-semibold uppercase tracking-[0.18em] text-accent">
-        On this page
+        Analysis workflow
       </div>
-      <NavList activeId={activeId} headings={items} />
+      <StepList activeId={activeId} steps={steps} />
     </div>
   );
 }

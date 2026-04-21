@@ -395,23 +395,6 @@ gse <- summarizeToGene(se)
   </table>
 </ScrollTable>
 
-### UMI branch for bulk libraries
-
-UMIs are uncommon in standard bulk RNA-seq, but they do exist in targeted or specialized bulk designs. If UMIs are present, handle them explicitly:
-
-- Use **[UMI-tools](https://umi-tools.readthedocs.io/en/latest/)** for extraction and deduplication.
-- If you run **nf-core/rnaseq**, keep the UMI-aware outputs and deduplication settings visible in your provenance.
-- Deduplication is not an optional cosmetic step if the library was designed around UMIs.
-
-```bash
-umi_tools extract \
-  --bc-pattern=NNNNNNNN \
-  -I sample_R1.fastq.gz \
-  --stdout extracted_R1.fastq.gz \
-  --read2-in sample_R2.fastq.gz \
-  --read2-out extracted_R2.fastq.gz
-```
-
 ## Downstream: from count table to biological interpretation
 
 The downstream half starts once you have a count table and credible metadata. The first job is still boring and essential: import, QC, design, normalization, and differential expression. Only then does it make sense to start asking more ambitious biological questions.
@@ -447,7 +430,7 @@ plotPCA(vsd, intgroup = c("condition", "batch"))
   inputs={["Gene-level count matrix or SummarizedExperiment", "Sample metadata with condition, batch, and covariates", "Clear contrasts and reference levels"]}
   outputs={["Normalized counts", "Dispersion estimates", "Log2 fold changes, adjusted p-values, shrunken effect sizes"]}
   alternatives={["edgeR", "limma-voom", "Likelihood-ratio testing for multi-level questions"]}
-  switchWhen="Switch to edgeR when you want a negative-binomial count model like DESeq2 but prefer TMM normalization, edgeR's quasi-likelihood or likelihood-ratio workflow, or its explicit filtering and dispersion-control workflow. Switch to limma-voom when you need limma's weighted linear-model ecosystem for many contrasts, duplicateCorrelation, sample weights, or close integration with other limma-based analyses; unlike DESeq2, voom converts counts to log-CPM and estimates precision weights before fitting linear models."
+  switchWhen="Stay with DESeq2 for most standard bulk RNA-seq comparisons. Switch to edgeR when you still want a count-based method but want more hands-on control over filtering and model setup, or when you already work in an edgeR-style pipeline. Switch to limma-voom when the project naturally lives in the limma ecosystem, especially if you have many contrasts or want a linear-model workflow built around weighted log-expression values rather than DESeq2's count model."
   pros={["Default choice for most users", "Strong documentation and community practice", "lfcShrink gives more stable effect-size interpretation"]}
   cons={["Not magic against bad design", "Can be over-trusted when metadata are weak", "Requires careful factor coding and contrast specification"]}
   gotcha="People often batch-correct the counts first and then fit DESeq2. Usually the right move is to model batch in the design, not to mutate the counts blindly upstream."
@@ -479,70 +462,15 @@ head(sig[order(sig$padj), ])
   <p>DESeq2 performs inference by modeling raw count data, with normalization handled internally. Transformed outputs such as VST and normalized counts are for visualization and exploratory analysis, not for the main hypothesis test.</p>
 </Callout>
 
-### Genome-aware / transcript-level analysis
-
-This is a distinct downstream layer from pathway or gene-set analysis. Once you collapse signal to gene-level counts, you lose exon structure, isoform usage, and genomic position. These methods are for cases where that lost structure is the point of the question.
-
-<ScrollTable>
-  <table>
-    <thead>
-      <tr>
-        <th>Method</th>
-        <th>What it keeps that gene-level DE loses</th>
-        <th>Main question</th>
-        <th>Use it when</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td>DEXSeq / DRIMSeq</td>
-        <td>Exon-level or transcript-usage structure</td>
-        <td>Do transcript isoforms or exon usage change even when gene-level expression does not tell the full story?</td>
-        <td>You care about differential transcript usage, isoform shifts, or exon-level regulation</td>
-      </tr>
-      <tr>
-        <td>rMATS</td>
-        <td>Splicing-event structure</td>
-        <td>Are specific splicing events such as exon skipping or intron retention changing between conditions?</td>
-        <td>You have replicate-aware RNA-seq and the biology plausibly depends on splicing regulation</td>
-      </tr>
-      <tr>
-        <td>PREDA</td>
-        <td>Genomic position</td>
-        <td>Are expression changes spatially clustered along chromosomes or genomic regions rather than scattered gene by gene?</td>
-        <td>You suspect regional regulation, domain-level effects, or copy-number-linked patterns</td>
-      </tr>
-    </tbody>
-  </table>
-</ScrollTable>
-
-Use this layer when the question is about transcript structure or genomic organization, not when the real question is pathway membership or sample-level state.
-
-```r
-library(DEXSeq)
-library(DRIMSeq)
-```
-
-```bash
-rmats.py --b1 treated_bams.txt --b2 control_bams.txt \
-  --gtf refs/genes.gtf \
-  --od rmats_out --tmp rmats_tmp \
-  --readLength 101 --nthread 8
-```
-
-```r
-library(PREDA)
-```
-
 <Callout title="What is statistically detectable vs what is biologically meaningful?" tone="warning">
   <p>A small adjusted p-value tells you that a change is statistically detectable under the model. It does <strong>not</strong> tell you that the change is biologically important, cell-intrinsic, or worth building a story around.</p>
   <p>In many real bulk RNA-seq studies, effect size, consistency across replicates, and biological interpretability matter more than a binary significance line. Shrunken log2 fold change and overall coherence are often more useful for prioritization than asking whether a gene sits just above or below `padj < 0.05`.</p>
 </Callout>
 
 <Callout title="Count models versus voom">
-  <p><strong>Stay with DESeq2</strong> for most standard bulk RNA-seq comparisons with a clear design and ordinary covariate adjustment.</p>
-  <p><strong>Use edgeR</strong> when you still want direct count modeling but prefer edgeR's TMM normalization and quasi-likelihood or likelihood-ratio workflow, especially in designs where you want tighter control over filtering and dispersion handling.</p>
-  <p><strong>Use limma-voom</strong> when the real advantage is limma itself: many contrasts, duplicate-correlation workflows, sample weights, or integration with an existing limma-based analysis stack. Unlike DESeq2, voom does not fit a negative-binomial count model directly; it transforms counts to log-CPM and carries mean-variance information forward as precision weights.</p>
+  <p><strong>DESeq2</strong> is the clean default for most ordinary bulk RNA-seq comparisons: count data in, design formula specified, differential expression out.</p>
+  <p><strong>edgeR</strong> is a good switch when you still want a count-based framework but want more explicit control over filtering and model choices, or when the rest of the project already uses edgeR.</p>
+  <p><strong>limma-voom</strong> is a good switch when the real benefit is the limma workflow itself, especially for many contrasts or broader linear-model analyses. The key difference is that voom converts counts into weighted log-expression values before modeling rather than fitting the DESeq2 count model directly.</p>
 </Callout>
 
 ### Batch effects and unwanted variation
@@ -846,7 +774,62 @@ Recommended practical default:
   <p>A higher immune, stromal, or EMT-like signal can mean more cells of that type, the same cells in a different state, or both. Use deconvolution to stress-test your interpretation, not to declare exact ground truth from bulk alone.</p>
 </Callout>
 
-At this point you should know whether your story is mainly gene-level, program-level, sample-state-level, regulatory, or compositional. Specialized coordinate-aware or network follow-up can still be useful, but they should come after one of these core layers has already sharpened the biological question.
+At this point you should know whether your story is mainly gene-level, program-level, sample-state-level, regulatory, or compositional. If the remaining question is specifically about isoforms, splicing, or genomic position, move into a more structure-aware layer.
+
+### Genome-aware / transcript-level analysis
+
+This is the advanced or optional layer. Once you collapse signal to gene-level counts, you lose exon structure, isoform usage, and genomic position. These methods are for cases where that lost structure is the actual biological question.
+
+<ScrollTable>
+  <table>
+    <thead>
+      <tr>
+        <th>Method</th>
+        <th>What it keeps that gene-level DE loses</th>
+        <th>Main question</th>
+        <th>Use it when</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>DEXSeq / DRIMSeq</td>
+        <td>Exon-level or transcript-usage structure</td>
+        <td>Do transcript isoforms or exon usage change even when gene-level expression does not tell the full story?</td>
+        <td>You care about differential transcript usage, isoform shifts, or exon-level regulation</td>
+      </tr>
+      <tr>
+        <td>rMATS</td>
+        <td>Splicing-event structure</td>
+        <td>Are specific splicing events such as exon skipping or intron retention changing between conditions?</td>
+        <td>You have replicate-aware RNA-seq and the biology plausibly depends on splicing regulation</td>
+      </tr>
+      <tr>
+        <td>PREDA</td>
+        <td>Genomic position</td>
+        <td>Are expression changes spatially clustered along chromosomes or genomic regions rather than scattered gene by gene?</td>
+        <td>You suspect regional regulation, domain-level effects, or copy-number-linked patterns</td>
+      </tr>
+    </tbody>
+  </table>
+</ScrollTable>
+
+Use this layer when the unresolved question is about transcript structure or genomic organization, not when the real question is pathway membership, sample state, or tissue composition.
+
+```r
+library(DEXSeq)
+library(DRIMSeq)
+```
+
+```bash
+rmats.py --b1 treated_bams.txt --b2 control_bams.txt \
+  --gtf refs/genes.gtf \
+  --od rmats_out --tmp rmats_tmp \
+  --readLength 101 --nthread 8
+```
+
+```r
+library(PREDA)
+```
 
 ### Targeted panels and ortholog sanity checks
 

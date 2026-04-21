@@ -25,6 +25,9 @@ const guidePresentation: Record<string, GuidePresentation> = {
       "differential-expression": {
         label: "Core DE"
       },
+      "gene-level": {
+        label: "Gene-level"
+      },
       "genome-aware--transcript-level-analysis": {
         label: "Genome-aware"
       },

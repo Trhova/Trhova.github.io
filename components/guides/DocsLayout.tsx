@@ -55,7 +55,11 @@ export function DocsLayout({
             />
 
             <div className="mt-4 lg:hidden">
-              <OnPageNav headings={headings} mode="mobile" />
+              <OnPageNav
+                headings={headings}
+                mode="mobile"
+                currentSlug={currentSlug}
+              />
             </div>
 
             <div className="guide-panel mt-6 min-w-0 px-5 py-8 sm:px-8">
@@ -66,7 +70,11 @@ export function DocsLayout({
           </div>
 
           <aside className="hidden lg:block">
-            <OnPageNav headings={headings} mode="desktop" />
+            <OnPageNav
+              headings={headings}
+              mode="desktop"
+              currentSlug={currentSlug}
+            />
           </aside>
         </div>
       </Container>

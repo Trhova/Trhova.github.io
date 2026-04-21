@@ -53,24 +53,28 @@ export function PipelineOverview() {
 
           <div className="grid gap-3">
             <StageCard
-              title="1. Core analysis"
-              description="Import carefully, inspect sample structure, set the design, normalize, assess batch, and run DESeq2 or a justified alternative."
+              title="1. Gene-level"
+              description="Start with import, QC, design, normalization, and differential expression. This is where you establish which genes change."
             />
             <StageCard
-              title="2. Enrichment analysis"
-              description="Choose ORA, GSEA or fgsea, ssGSEA or GSVA, or PROGENy based on whether your question is about DEG over-representation, ranked shifts, sample-level programs, or pathway activity."
+              title="2. Gene set-level"
+              description="Move from individual genes to pathways or processes with ORA or GSEA once the DE result is trustworthy."
             />
             <StageCard
-              title="3. Regulatory and tissue context"
-              description="TF activity, cell composition or enrichment, targeted marker panels, network context, and coexpression modules when the data support them."
+              title="3. Sample-level pathway or state activity"
+              description="Use GSVA, ssGSEA, or related signature scoring when the question is how programs vary across samples rather than just across groups."
             />
             <StageCard
-              title="4. Genome-aware interpretation"
-              description="Regional signal mapping, coverage inspection, and chromosome-aware views that help interpret the same DE result in genomic space."
+              title="4. Regulatory or signaling inference"
+              description="Use PROGENy or DoRothEA plus VIPER when you want a more explicit hypothesis about upstream drivers of the expression pattern."
             />
             <StageCard
-              title="5. Interpretation"
-              description="The real endpoint is not a longer figure legend. It is a sharper answer to a biological question, with clear limits on what bulk RNA-seq can and cannot tell you."
+              title="5. Tissue composition"
+              description="Stress-test whether apparent biology may instead reflect changing cell-type mixture in the bulk sample."
+            />
+            <StageCard
+              title="6. Genome-aware or transcript-level"
+              description="Reserve DEXSeq, DRIMSeq, rMATS, or PREDA for questions that depend on transcript structure or genomic position rather than gene-level abundance alone."
               emphasis="warning"
             />
           </div>

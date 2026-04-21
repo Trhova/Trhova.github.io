@@ -45,7 +45,7 @@
     {
       "id": "components/guides/OnPageNav.tsx",
       "kind": "component",
-      "label": "On-page nav"
+      "label": "Workflow nav"
     },
     {
       "id": "components/guides/GuideCodeBlock.tsx",

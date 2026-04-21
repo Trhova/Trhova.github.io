@@ -32,7 +32,6 @@ export function SiteNav() {
             <NavLink href="/writing">Writing</NavLink>
             <GuidesMenu />
             <NavLink href="/publications">Publications</NavLink>
-            <NavLink href="/links">Links</NavLink>
             <NavLink href="/inspirations">Inspirations</NavLink>
             <NavLink href="/resources">Resources</NavLink>
             <NavLink href="/cv">CV</NavLink>
