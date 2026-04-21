@@ -471,6 +471,14 @@ sig <- subset(as.data.frame(res_shrunk), padj < 0.05 & abs(log2FoldChange) > 1)
 head(sig[order(sig$padj), ])
 ```
 
+<Callout title="How to read the main DESeq2 outputs">
+  <p><strong>`pvalue` / `padj`</strong>: the statistical significance output from the DESeq2 model. This is the main inference result.</p>
+  <p><strong>`log2FoldChange`</strong>: the estimated effect size, including both magnitude and direction of change.</p>
+  <p><strong>`lfcShrink` output</strong>: a shrunken, more stable version of log2 fold change that is usually better for ranking genes and practical interpretation.</p>
+  <p><strong>`vst()` output</strong>: variance-stabilized expression values for visualization such as PCA or clustering, not for statistical testing.</p>
+  <p>DESeq2 performs inference by modeling raw count data, with normalization handled internally. Transformed outputs such as VST and normalized counts are for visualization and exploratory analysis, not for the main hypothesis test.</p>
+</Callout>
+
 ### Genome-aware / transcript-level analysis
 
 This is a distinct downstream layer from pathway or gene-set analysis. Once you collapse signal to gene-level counts, you lose exon structure, isoform usage, and genomic position. These methods are for cases where that lost structure is the point of the question.

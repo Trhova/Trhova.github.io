@@ -1,0 +1,93 @@
+{
+  "repo": "Trhova/Trhova.github.io",
+  "generated_by": "local graphify fallback snapshot",
+  "nodes": [
+    {
+      "id": "app/layout.tsx",
+      "kind": "layout",
+      "label": "Root layout"
+    },
+    {
+      "id": "components/SiteNav.tsx",
+      "kind": "component",
+      "label": "Site navigation"
+    },
+    {
+      "id": "components/GuidesMenu.tsx",
+      "kind": "component",
+      "label": "Guides dropdown"
+    },
+    {
+      "id": "app/guides/page.tsx",
+      "kind": "route",
+      "label": "Guides index"
+    },
+    {
+      "id": "app/guides/[slug]/page.tsx",
+      "kind": "route",
+      "label": "Guide detail route"
+    },
+    {
+      "id": "data/guides.ts",
+      "kind": "data",
+      "label": "Guide registry"
+    },
+    {
+      "id": "content/guides/index.ts",
+      "kind": "content-map",
+      "label": "Guide module map"
+    },
+    {
+      "id": "content/guides/bulk-rna-seq.mdx",
+      "kind": "content",
+      "label": "RNA-seq guide"
+    },
+    {
+      "id": "lib/guides.ts",
+      "kind": "helper",
+      "label": "Guide helpers"
+    },
+    {
+      "id": "components/guides/GuidePageLayout.tsx",
+      "kind": "component",
+      "label": "Guide layout"
+    }
+  ],
+  "edges": [
+    {
+      "from": "components/SiteNav.tsx",
+      "to": "components/GuidesMenu.tsx",
+      "type": "uses"
+    },
+    {
+      "from": "app/guides/page.tsx",
+      "to": "data/guides.ts",
+      "type": "reads"
+    },
+    {
+      "from": "app/guides/[slug]/page.tsx",
+      "to": "data/guides.ts",
+      "type": "reads"
+    },
+    {
+      "from": "app/guides/[slug]/page.tsx",
+      "to": "content/guides/index.ts",
+      "type": "reads"
+    },
+    {
+      "from": "app/guides/[slug]/page.tsx",
+      "to": "lib/guides.ts",
+      "type": "reads"
+    },
+    {
+      "from": "content/guides/index.ts",
+      "to": "content/guides/bulk-rna-seq.mdx",
+      "type": "maps"
+    },
+    {
+      "from": "app/guides/[slug]/page.tsx",
+      "to": "components/guides/GuidePageLayout.tsx",
+      "type": "renders_with"
+    }
+  ]
+}
