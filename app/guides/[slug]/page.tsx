@@ -2,14 +2,16 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 
 import { publishedGuides } from "@/data/guides";
+import { getGuidePresentation } from "@/lib/guidePresentation";
 import {
   getGuideBySlug,
   getGuideHeadings,
+  getGuideReadingTimeMinutes,
   getGuideModule,
   getPublishedGuideBySlug
 } from "@/lib/guides";
 
-import { GuidePageLayout } from "@/components/guides/GuidePageLayout";
+import { DocsLayout } from "@/components/guides/DocsLayout";
 import { SiteFooter } from "@/components/SiteFooter";
 import { SiteNav } from "@/components/SiteNav";
 
@@ -46,21 +48,27 @@ export default async function GuidePage({
     notFound();
   }
 
-  const headings = await getGuideHeadings(guide.slug);
+  const [headings, readingTimeMinutes] = await Promise.all([
+    getGuideHeadings(guide.slug),
+    getGuideReadingTimeMinutes(guide.slug)
+  ]);
+  const presentation = getGuidePresentation(guide.slug);
   const GuideContent = guideModule.Component;
 
   return (
     <>
       <SiteNav />
-      <GuidePageLayout
+      <DocsLayout
+        currentSlug={guide.slug}
         title={guideModule.pageTitle ?? guide.title}
-        eyebrow={guideModule.eyebrow}
-        description={guide.description}
-        tags={guide.tags}
+        summary={presentation?.summary ?? guide.description}
+        audience={presentation?.audience ?? "Intermediate"}
+        readingTimeMinutes={readingTimeMinutes}
+        whatYoullLearn={presentation?.whatYoullLearn}
         headings={headings}
       >
         <GuideContent />
-      </GuidePageLayout>
+      </DocsLayout>
       <SiteFooter />
     </>
   );

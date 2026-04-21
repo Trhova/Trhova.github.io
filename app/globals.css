@@ -52,6 +52,10 @@ button:focus-visible {
   font-family: var(--font-guide-sans), sans-serif;
 }
 
+.guide-theme {
+  scroll-behavior: smooth;
+}
+
 .guide-theme a {
   color: rgb(var(--accent));
   text-decoration: underline;
@@ -192,4 +196,33 @@ button:focus-visible {
   padding: 0.15rem 0.4rem;
   color: rgb(var(--accent));
   font-size: 0.9em;
+}
+
+.guide-section-block {
+  margin-top: 4rem;
+}
+
+.guide-article > .guide-section-block:first-child {
+  margin-top: 0;
+}
+
+.guide-section-block h2 {
+  margin-top: 0;
+}
+
+.guide-section-label {
+  margin-bottom: 0.75rem;
+  color: rgb(var(--accent));
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+
+.guide-section-intro {
+  margin-top: 0.75rem;
+  max-width: 48rem;
+  color: rgb(var(--muted));
+  font-size: 1rem;
+  line-height: 1.75;
 }

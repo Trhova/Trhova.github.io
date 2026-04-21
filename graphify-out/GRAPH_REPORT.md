@@ -36,8 +36,18 @@
   - guides landing page
 - `app/guides/[slug]/page.tsx`
   - published guide renderer
+- `components/guides/DocsLayout.tsx`
+  - docs-style 3-column guide shell
+- `components/guides/GuideHeader.tsx`
+  - per-page guide header block
+- `components/guides/GuideSidebar.tsx`
+  - left navigation with desktop sticky mode and mobile drawer mode
+- `components/guides/OnPageNav.tsx`
+  - right-side H2/H3 scrollspy navigation
 - `data/guides.ts`
   - source of truth for guide metadata, ordering, and published vs coming-soon state
+- `lib/guidePresentation.ts`
+  - per-guide presentation metadata such as summary, audience, learning goals, and section labels
 - `content/guides/index.ts`
   - explicit slug-to-MDX module map
 - `content/guides/bulk-rna-seq.mdx`
@@ -52,7 +62,9 @@
 3. Guide navigation and landing-page metadata come from `data/guides.ts`.
 4. Published guide pages resolve through `app/guides/[slug]/page.tsx`.
 5. That route reads metadata from `data/guides.ts`, content modules from `content/guides/index.ts`, and heading data from `lib/guides.ts`.
-6. Guide content is rendered inside `components/guides/GuidePageLayout.tsx` with guide-specific presentation components.
+6. Guide content is rendered inside `components/guides/DocsLayout.tsx` with a left guide sidebar, center content column, and right scrollspy column.
+7. Page-level guide metadata comes from `lib/guidePresentation.ts`.
+8. H2 presentation is enhanced globally through `mdx-components.tsx` and `components/guides/GuideHeading.tsx`.
 
 ## Guides subsystem
 
@@ -60,6 +72,7 @@
   - entry in `data/guides.ts` with `status: "published"`
   - matching MDX file in `content/guides/`
   - matching module entry in `content/guides/index.ts`
+  - optional presentation metadata in `lib/guidePresentation.ts`
 - Coming-soon guide requirements:
   - entry in `data/guides.ts` with `status: "coming-soon"`
   - no route or MDX file required

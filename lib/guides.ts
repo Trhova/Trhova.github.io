@@ -16,6 +16,10 @@ function getGuideSourcePath(slug: string) {
   return path.join(process.cwd(), "content", "guides", `${slug}.mdx`);
 }
 
+async function getGuideSource(slug: string) {
+  return fs.readFile(getGuideSourcePath(slug), "utf8");
+}
+
 export function getGuideBySlug(slug: string) {
   return guides.find((guide) => guide.slug === slug);
 }
@@ -29,7 +33,7 @@ export function getGuideModule(slug: string) {
 }
 
 export async function getGuideHeadings(slug: string): Promise<GuideHeading[]> {
-  const source = await fs.readFile(getGuideSourcePath(slug), "utf8");
+  const source = await getGuideSource(slug);
   const slugger = new GithubSlugger();
   const headings: GuideHeading[] = [];
   let inFence = false;
@@ -54,4 +58,21 @@ export async function getGuideHeadings(slug: string): Promise<GuideHeading[]> {
   }
 
   return headings;
+}
+
+export async function getGuideReadingTimeMinutes(slug: string) {
+  const source = await getGuideSource(slug);
+  const plainText = source
+    .replace(/```[\s\S]*?```/g, " ")
+    .replace(/`[^`]*`/g, " ")
+    .replace(/<[^>]+>/g, " ")
+    .replace(/^\s*(import|export)\s+.*$/gm, " ")
+    .replace(/[#[\]_*(){}>-]/g, " ");
+
+  const words = plainText
+    .split(/\s+/)
+    .map((word) => word.trim())
+    .filter(Boolean).length;
+
+  return Math.max(1, Math.ceil(words / 220));
 }

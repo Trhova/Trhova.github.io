@@ -28,9 +28,34 @@
       "label": "Guide detail route"
     },
     {
+      "id": "components/guides/DocsLayout.tsx",
+      "kind": "component",
+      "label": "Docs layout"
+    },
+    {
+      "id": "components/guides/GuideHeader.tsx",
+      "kind": "component",
+      "label": "Guide header"
+    },
+    {
+      "id": "components/guides/GuideSidebar.tsx",
+      "kind": "component",
+      "label": "Guide sidebar"
+    },
+    {
+      "id": "components/guides/OnPageNav.tsx",
+      "kind": "component",
+      "label": "On-page nav"
+    },
+    {
       "id": "data/guides.ts",
       "kind": "data",
       "label": "Guide registry"
+    },
+    {
+      "id": "lib/guidePresentation.ts",
+      "kind": "data",
+      "label": "Guide presentation metadata"
     },
     {
       "id": "content/guides/index.ts",
@@ -50,7 +75,7 @@
     {
       "id": "components/guides/GuidePageLayout.tsx",
       "kind": "component",
-      "label": "Guide layout"
+      "label": "Guide layout compatibility export"
     }
   ],
   "edges": [
@@ -83,6 +108,41 @@
       "from": "content/guides/index.ts",
       "to": "content/guides/bulk-rna-seq.mdx",
       "type": "maps"
+    },
+    {
+      "from": "app/guides/[slug]/page.tsx",
+      "to": "lib/guidePresentation.ts",
+      "type": "reads"
+    },
+    {
+      "from": "app/guides/[slug]/page.tsx",
+      "to": "components/guides/DocsLayout.tsx",
+      "type": "renders_with"
+    },
+    {
+      "from": "components/guides/DocsLayout.tsx",
+      "to": "components/guides/GuideHeader.tsx",
+      "type": "uses"
+    },
+    {
+      "from": "components/guides/DocsLayout.tsx",
+      "to": "components/guides/GuideSidebar.tsx",
+      "type": "uses"
+    },
+    {
+      "from": "components/guides/DocsLayout.tsx",
+      "to": "components/guides/OnPageNav.tsx",
+      "type": "uses"
+    },
+    {
+      "from": "mdx-components.tsx",
+      "to": "components/guides/GuideHeading.tsx",
+      "type": "uses"
+    },
+    {
+      "from": "components/guides/GuideHeading.tsx",
+      "to": "lib/guidePresentation.ts",
+      "type": "reads"
     },
     {
       "from": "app/guides/[slug]/page.tsx",
