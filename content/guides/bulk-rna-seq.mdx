@@ -471,6 +471,61 @@ sig <- subset(as.data.frame(res_shrunk), padj < 0.05 & abs(log2FoldChange) > 1)
 head(sig[order(sig$padj), ])
 ```
 
+### Genome-aware / transcript-level analysis
+
+This is a distinct downstream layer from pathway or gene-set analysis. Once you collapse signal to gene-level counts, you lose exon structure, isoform usage, and genomic position. These methods are for cases where that lost structure is the point of the question.
+
+<ScrollTable>
+  <table>
+    <thead>
+      <tr>
+        <th>Method</th>
+        <th>What it keeps that gene-level DE loses</th>
+        <th>Main question</th>
+        <th>Use it when</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>DEXSeq / DRIMSeq</td>
+        <td>Exon-level or transcript-usage structure</td>
+        <td>Do transcript isoforms or exon usage change even when gene-level expression does not tell the full story?</td>
+        <td>You care about differential transcript usage, isoform shifts, or exon-level regulation</td>
+      </tr>
+      <tr>
+        <td>rMATS</td>
+        <td>Splicing-event structure</td>
+        <td>Are specific splicing events such as exon skipping or intron retention changing between conditions?</td>
+        <td>You have replicate-aware RNA-seq and the biology plausibly depends on splicing regulation</td>
+      </tr>
+      <tr>
+        <td>PREDA</td>
+        <td>Genomic position</td>
+        <td>Are expression changes spatially clustered along chromosomes or genomic regions rather than scattered gene by gene?</td>
+        <td>You suspect regional regulation, domain-level effects, or copy-number-linked patterns</td>
+      </tr>
+    </tbody>
+  </table>
+</ScrollTable>
+
+Use this layer when the question is about transcript structure or genomic organization, not when the real question is pathway membership or sample-level state.
+
+```r
+library(DEXSeq)
+library(DRIMSeq)
+```
+
+```bash
+rmats.py --b1 treated_bams.txt --b2 control_bams.txt \
+  --gtf refs/genes.gtf \
+  --od rmats_out --tmp rmats_tmp \
+  --readLength 101 --nthread 8
+```
+
+```r
+library(PREDA)
+```
+
 <Callout title="What is statistically detectable vs what is biologically meaningful?" tone="warning">
   <p>A small adjusted p-value tells you that a change is statistically detectable under the model. It does <strong>not</strong> tell you that the change is biologically important, cell-intrinsic, or worth building a story around.</p>
   <p>In many real bulk RNA-seq studies, effect size, consistency across replicates, and biological interpretability matter more than a binary significance line. Shrunken log2 fold change and overall coherence are often more useful for prioritization than asking whether a gene sits just above or below `padj < 0.05`.</p>

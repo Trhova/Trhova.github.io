@@ -1,17 +1,17 @@
 export function PipelineOverview() {
   return (
-    <section className="not-prose my-8 rounded-[1.75rem] border border-white/10 bg-slate-950/70 p-5 shadow-[0_24px_60px_rgba(0,0,0,0.35)]">
-      <p className="mb-4 text-sm font-semibold uppercase tracking-[0.18em] text-teal-200">
+    <section className="not-prose my-8 rounded-[1.75rem] border border-border bg-surface p-5 shadow-soft">
+      <p className="mb-4 text-sm font-semibold uppercase tracking-[0.18em] text-accent">
         Pipeline overview
       </p>
 
       <div className="grid gap-5 xl:grid-cols-2">
-        <div className="rounded-[1.5rem] border border-teal-300/20 bg-teal-300/10 p-5">
+        <div className="rounded-[1.5rem] border border-accent/20 bg-accent/10 p-5">
           <div className="mb-4 flex items-center justify-between gap-3">
-            <h3 className="m-0 font-[var(--font-guide-display)] text-2xl text-white">
+            <h3 className="m-0 font-[var(--font-guide-display)] text-2xl text-text">
               Upstream
             </h3>
-            <span className="rounded-full border border-teal-300/30 bg-white/5 px-3 py-1 text-xs font-semibold uppercase tracking-[0.16em] text-teal-200">
+            <span className="rounded-full border border-accent/20 bg-surface px-3 py-1 text-xs font-semibold uppercase tracking-[0.16em] text-accent">
               Ends at count table
             </span>
           </div>
@@ -41,12 +41,12 @@ export function PipelineOverview() {
           </div>
         </div>
 
-        <div className="rounded-[1.5rem] border border-amber-300/20 bg-amber-300/10 p-5">
+        <div className="rounded-[1.5rem] border border-amber-300/25 bg-amber-300/10 p-5">
           <div className="mb-4 flex items-center justify-between gap-3">
-            <h3 className="m-0 font-[var(--font-guide-display)] text-2xl text-white">
+            <h3 className="m-0 font-[var(--font-guide-display)] text-2xl text-text">
               Downstream
             </h3>
-            <span className="rounded-full border border-amber-300/30 bg-white/5 px-3 py-1 text-xs font-semibold uppercase tracking-[0.16em] text-amber-200">
+            <span className="rounded-full border border-amber-300/25 bg-surface px-3 py-1 text-xs font-semibold uppercase tracking-[0.16em] text-amber-700">
               Starts from count table
             </span>
           </div>
@@ -77,7 +77,7 @@ export function PipelineOverview() {
         </div>
       </div>
 
-      <div className="mt-5 rounded-2xl border border-white/10 bg-white/5 p-4 text-sm leading-7 text-slate-200">
+      <div className="mt-5 rounded-2xl border border-border bg-surface2 p-4 text-sm leading-7 text-muted">
         Upstream is about generating trustworthy inputs. Downstream is about
         asking the right biological question of those inputs. The count table is
         the boundary between the two.
@@ -97,15 +97,15 @@ function StageCard({
 }) {
   const emphasisClassName =
     emphasis === "accent"
-      ? "border-teal-300/25 bg-teal-300/10"
+      ? "border-accent/20 bg-accent/10"
       : emphasis === "warning"
         ? "border-amber-300/25 bg-amber-300/10"
-        : "border-white/10 bg-slate-950/60";
+        : "border-border bg-surface";
 
   return (
     <div className={`rounded-2xl border p-4 ${emphasisClassName}`}>
-      <p className="m-0 text-sm font-semibold text-white">{title}</p>
-      <p className="mt-2 mb-0 text-sm leading-7 text-slate-200">
+      <p className="m-0 text-sm font-semibold text-text">{title}</p>
+      <p className="mt-2 mb-0 text-sm leading-7 text-muted">
         {description}
       </p>
     </div>

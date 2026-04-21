@@ -36,10 +36,10 @@ export function GuidePageLayout({
           <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
             <div className="max-w-3xl space-y-4">
               <span className="guide-eyebrow">{eyebrow}</span>
-              <h1 className="font-[var(--font-guide-display)] text-4xl tracking-tight text-white sm:text-5xl">
+              <h1 className="font-[var(--font-guide-display)] text-4xl tracking-tight text-text sm:text-5xl">
                 {title}
               </h1>
-              <p className="max-w-2xl text-base leading-7 text-slate-200 sm:text-lg">
+              <p className="max-w-2xl text-base leading-7 text-muted sm:text-lg">
                 {description}
               </p>
             </div>
@@ -47,7 +47,7 @@ export function GuidePageLayout({
               {tags.map((tag) => (
                 <span
                   key={tag}
-                  className="rounded-full border border-white/10 bg-white/5 px-3 py-1 text-sm text-slate-200"
+                  className="rounded-full border border-border bg-surface2 px-3 py-1 text-sm text-muted"
                 >
                   {tag}
                 </span>
@@ -58,12 +58,12 @@ export function GuidePageLayout({
 
         <div className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_18rem]">
           <div className="guide-panel min-w-0 px-5 py-8 sm:px-8">
-            <div className="mb-8 rounded-2xl border border-white/10 bg-slate-950/70 p-5">
-              <p className="mb-3 text-sm font-semibold uppercase tracking-[0.18em] text-teal-200">
+            <div className="mb-8 rounded-2xl border border-border bg-surface2/90 p-5">
+              <p className="mb-3 text-sm font-semibold uppercase tracking-[0.18em] text-accent">
                 Full table of contents
               </p>
               <nav aria-label="Page table of contents">
-                <ol className="grid gap-2 text-sm text-slate-200 sm:grid-cols-2">
+                <ol className="grid gap-2 text-sm text-muted sm:grid-cols-2">
                   {toc.map((item) => (
                     <li
                       key={item.slug}
@@ -81,15 +81,15 @@ export function GuidePageLayout({
 
           <aside className="hidden lg:block">
             <div className="guide-panel sticky top-24 px-5 py-6">
-              <p className="mb-4 text-xs font-semibold uppercase tracking-[0.18em] text-teal-200">
+              <p className="mb-4 text-xs font-semibold uppercase tracking-[0.18em] text-accent">
                 On this page
               </p>
               <nav aria-label="Secondary table of contents">
-                <ol className="space-y-3 text-sm text-slate-200">
+                <ol className="space-y-3 text-sm text-muted">
                   {toc.map((item) => (
                     <li
                       key={`${item.slug}-secondary`}
-                      className={item.depth === 3 ? "pl-4 text-slate-300" : ""}
+                      className={item.depth === 3 ? "pl-4 text-muted/80" : ""}
                     >
                       <a href={`#${item.slug}`}>{item.text}</a>
                     </li>
