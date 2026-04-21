@@ -23,7 +23,7 @@ export function MethodCard({
   defaultTool: string;
   docs?: LinkItem[];
   goodOutput: string;
-  gotcha: string;
+  gotcha?: string;
   inputs?: string[];
   outputs?: string[];
   papers?: LinkItem[];
@@ -62,13 +62,15 @@ export function MethodCard({
         </div>
       </div>
 
-      <div className="mt-4 grid gap-4 xl:grid-cols-4">
+      <div className="mt-4 grid gap-4 lg:grid-cols-2">
         <InfoList title="Inputs" items={inputs} />
         <InfoList title="Outputs" items={outputs} />
         <InfoList title="Alternatives" items={alternatives} />
-        <div className="rounded-2xl border border-border bg-surface2 p-4">
-          <p className="mb-2 text-sm font-semibold text-text">Gotcha</p>
-          <p className="m-0 text-sm leading-7 text-muted">{gotcha}</p>
+        <div className="rounded-2xl border border-border bg-surface p-4">
+          <p className="mb-2 text-sm font-semibold text-text">
+            What good output looks like
+          </p>
+          <p className="m-0 text-sm leading-7 text-muted">{goodOutput}</p>
         </div>
       </div>
 
@@ -85,12 +87,12 @@ export function MethodCard({
         />
       </div>
 
-      <div className="mt-4 rounded-2xl border border-border bg-surface p-4">
-        <p className="mb-2 text-sm font-semibold text-text">
-          What good output looks like
-        </p>
-        <p className="m-0 text-sm leading-7 text-muted">{goodOutput}</p>
-      </div>
+      {gotcha ? (
+        <div className="mt-4 rounded-2xl border border-border bg-surface2 p-4">
+          <p className="mb-2 text-sm font-semibold text-text">Practical note</p>
+          <p className="m-0 text-sm leading-7 text-muted">{gotcha}</p>
+        </div>
+      ) : null}
 
       {docs.length > 0 || papers.length > 0 ? (
         <div className="mt-4 grid gap-4 md:grid-cols-2">
@@ -112,11 +114,13 @@ function InfoList({
   title: string;
 }) {
   return (
-    <div className={`rounded-2xl border p-4 ${className}`}>
+    <div className={`min-w-0 rounded-2xl border p-4 ${className}`}>
       <p className="mb-2 text-sm font-semibold text-text">{title}</p>
       <ul className="m-0 space-y-2 pl-5 text-sm leading-6">
         {items.map((item) => (
-          <li key={item}>{item}</li>
+          <li key={item} className="break-words">
+            {item}
+          </li>
         ))}
       </ul>
     </div>

@@ -11,6 +11,7 @@
 - Guide header: `components/guides/GuideHeader.tsx`
 - Left guide nav: `components/guides/GuideSidebar.tsx`
 - Right scrollspy nav: `components/guides/OnPageNav.tsx`
+- Guide code block wrapper: `components/guides/GuideCodeBlock.tsx`
 - Guide registry: `data/guides.ts`
 - Guide presentation metadata: `lib/guidePresentation.ts`
 - Guide content map: `content/guides/index.ts`

@@ -447,7 +447,7 @@ plotPCA(vsd, intgroup = c("condition", "batch"))
   inputs={["Gene-level count matrix or SummarizedExperiment", "Sample metadata with condition, batch, and covariates", "Clear contrasts and reference levels"]}
   outputs={["Normalized counts", "Dispersion estimates", "Log2 fold changes, adjusted p-values, shrunken effect sizes"]}
   alternatives={["edgeR", "limma-voom", "Likelihood-ratio testing for multi-level questions"]}
-  switchWhen="Use edgeR when you want a similarly strong count-modeling framework with explicit filtering and flexible design handling. Use limma-voom when the linear-model workflow and precision weights are a better fit for the broader analysis ecosystem or multi-factor modeling."
+  switchWhen="Switch to edgeR when you want a negative-binomial count model like DESeq2 but prefer TMM normalization, edgeR's quasi-likelihood or likelihood-ratio workflow, or its explicit filtering and dispersion-control workflow. Switch to limma-voom when you need limma's weighted linear-model ecosystem for many contrasts, duplicateCorrelation, sample weights, or close integration with other limma-based analyses; unlike DESeq2, voom converts counts to log-CPM and estimates precision weights before fitting linear models."
   pros={["Default choice for most users", "Strong documentation and community practice", "lfcShrink gives more stable effect-size interpretation"]}
   cons={["Not magic against bad design", "Can be over-trusted when metadata are weak", "Requires careful factor coding and contrast specification"]}
   gotcha="People often batch-correct the counts first and then fit DESeq2. Usually the right move is to model batch in the design, not to mutate the counts blindly upstream."
@@ -540,7 +540,9 @@ library(PREDA)
 </Callout>
 
 <Callout title="Count models versus voom">
-  <p><strong>DESeq2</strong> and <strong>edgeR</strong> model counts directly. <strong>voom</strong> estimates mean-variance weights from count data and passes those weights into limma's linear-model framework. None of these frameworks will rescue a confused design formula.</p>
+  <p><strong>Stay with DESeq2</strong> for most standard bulk RNA-seq comparisons with a clear design and ordinary covariate adjustment.</p>
+  <p><strong>Use edgeR</strong> when you still want direct count modeling but prefer edgeR's TMM normalization and quasi-likelihood or likelihood-ratio workflow, especially in designs where you want tighter control over filtering and dispersion handling.</p>
+  <p><strong>Use limma-voom</strong> when the real advantage is limma itself: many contrasts, duplicate-correlation workflows, sample weights, or integration with an existing limma-based analysis stack. Unlike DESeq2, voom does not fit a negative-binomial count model directly; it transforms counts to log-CPM and carries mean-variance information forward as precision weights.</p>
 </Callout>
 
 ### Batch effects and unwanted variation
@@ -594,7 +596,7 @@ dds <- DESeq(dds)
 
 <Callout title="A DEG table is not yet a biological conclusion" tone="warning">
   <p>Before you move into enrichment or more advanced downstream layers, stop and ask what the DE pattern might actually reflect. Expression changes can represent specific biology, but they can also reflect response, compensation, injury, timing effects, generic stress programs, or differences in cell mixture.</p>
-  <p>Use this as a checkpoint: is the signal most consistent with technical structure, a generic stress program, a composition shift, or a plausible biology-first effect that deserves deeper follow-up?</p>
+  <p>Treat the DEG table as evidence about RNA abundance, not as direct proof of protein abundance or cellular function. The next job is to decide whether the pattern is robust, biologically coherent, and worth deeper follow-up at the pathway, regulatory, or composition level.</p>
 </Callout>
 
 ### Downstream layers after DE

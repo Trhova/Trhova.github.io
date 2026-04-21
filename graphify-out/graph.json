@@ -48,6 +48,11 @@
       "label": "On-page nav"
     },
     {
+      "id": "components/guides/GuideCodeBlock.tsx",
+      "kind": "component",
+      "label": "Guide code block"
+    },
+    {
       "id": "data/guides.ts",
       "kind": "data",
       "label": "Guide registry"
@@ -132,6 +137,11 @@
     {
       "from": "components/guides/DocsLayout.tsx",
       "to": "components/guides/OnPageNav.tsx",
+      "type": "uses"
+    },
+    {
+      "from": "mdx-components.tsx",
+      "to": "components/guides/GuideCodeBlock.tsx",
       "type": "uses"
     },
     {

@@ -84,6 +84,33 @@ button:focus-visible {
   box-shadow: 0 24px 60px rgba(15, 23, 42, 0.08);
 }
 
+.guide-code-block {
+  border: 1px solid rgb(var(--border) / 0.85);
+  border-radius: 1rem;
+  background: rgb(var(--surface));
+  box-shadow: 0 24px 60px rgba(15, 23, 42, 0.08);
+}
+
+.guide-code-pre {
+  overflow-x: hidden;
+  border: 0;
+  background: transparent;
+  margin: 0;
+  padding: 3.5rem 1.25rem 1.25rem;
+  box-shadow: none;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.guide-code-pre code {
+  display: block;
+  white-space: pre-wrap;
+  word-break: break-word;
+  overflow-wrap: anywhere;
+  font-size: 0.8125rem;
+  line-height: 1.75;
+}
+
 .guide-theme table {
   width: 100%;
   border-collapse: collapse;

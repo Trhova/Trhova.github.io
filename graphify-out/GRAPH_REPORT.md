@@ -44,6 +44,8 @@
   - left navigation with desktop sticky mode and mobile drawer mode
 - `components/guides/OnPageNav.tsx`
   - right-side H2/H3 scrollspy navigation
+- `components/guides/GuideCodeBlock.tsx`
+  - copyable guide code blocks with wrapped long lines
 - `data/guides.ts`
   - source of truth for guide metadata, ordering, and published vs coming-soon state
 - `lib/guidePresentation.ts`
@@ -65,6 +67,7 @@
 6. Guide content is rendered inside `components/guides/DocsLayout.tsx` with a left guide sidebar, center content column, and right scrollspy column.
 7. Page-level guide metadata comes from `lib/guidePresentation.ts`.
 8. H2 presentation is enhanced globally through `mdx-components.tsx` and `components/guides/GuideHeading.tsx`.
+9. MDX code fences are enhanced globally through `mdx-components.tsx` and `components/guides/GuideCodeBlock.tsx`.
 
 ## Guides subsystem
 
