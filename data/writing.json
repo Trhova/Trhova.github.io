@@ -1,6 +1,19 @@
 {
   "posts": [
     {
+      "id": "bulk-rna-seq-guide",
+      "title": "An intuition-first bulk RNA-seq guide, with a runnable R companion",
+      "tags": ["Transcriptomics", "Bulk RNA-seq", "Guide"],
+      "excerpt": "I put together a bulk RNA-seq guide that walks from experimental design and QC to differential expression and layered biological interpretation. The website version is the conceptual guide; the GitHub repo is the small runnable R walkthrough.",
+      "siteUrl": "https://trhova.github.io/guides/bulk-rna-seq/",
+      "repoUrl": "https://github.com/Trhova/Transcriptomics-extended",
+      "body": [
+        "The guide on this website is meant to be the reading-first version: how to think about upstream decisions, what DESeq2 is actually doing, and when to move from gene-level results into gene sets, sample states, regulatory inference, and other downstream layers.",
+        "I wanted the companion repository to be more than a code dump, so the GitHub side is built as a small airway-based teaching example in R. It walks through DESeq2, ORA, GSEA, ssGSEA, PROGENy, and DoRothEA plus VIPER, and it saves the key figures and tables directly in the repo.",
+        "So the split is simple: if you want the practical reasoning and structure, start with the guide here on the website. If you want a minimal reproducible example you can run and modify, use the GitHub repository alongside it."
+      ]
+    },
+    {
       "id": "causal-microbiome",
       "title": "From correlations to causation in microbiome research",
       "tags": ["Microbiome", "Causal inference", "Methods"],

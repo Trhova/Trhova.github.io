@@ -1,6 +1,12 @@
 "use client";
 
-import { ArrowUpRight, ChevronDown, ChevronUp, Github } from "lucide-react";
+import {
+  ArrowUpRight,
+  BookOpen,
+  ChevronDown,
+  ChevronUp,
+  Github
+} from "lucide-react";
 import { useMemo, useState } from "react";
 
 import { ExternalLink } from "@/components/ExternalLink";
@@ -13,6 +19,7 @@ type WritingPost = {
   tags: string[];
   body: string[];
   repoUrl?: string;
+  siteUrl?: string;
 };
 
 export function WritingCard({ post }: { post: WritingPost }) {
@@ -25,21 +32,34 @@ export function WritingCard({ post }: { post: WritingPost }) {
         <h3 className="text-lg font-semibold tracking-tight text-text">
           {post.title}
         </h3>
-        {post.repoUrl ? (
-          <ExternalLink
-            href={post.repoUrl}
-            ariaLabel="Repository link"
-            className="inline-flex items-center gap-2 rounded-full border border-border bg-surface2 px-3 py-1 text-xs font-medium text-text hover:bg-surface2/70"
-          >
-            <Github className="h-4 w-4" />
-            Repo
-            <ArrowUpRight className="h-4 w-4 opacity-60" />
-          </ExternalLink>
-        ) : (
-          <span className="rounded-full border border-border bg-surface2 px-3 py-1 text-xs font-medium text-muted">
-            Repo link: add in data
-          </span>
-        )}
+        <div className="flex flex-wrap items-center justify-end gap-2">
+          {post.siteUrl ? (
+            <ExternalLink
+              href={post.siteUrl}
+              ariaLabel="Guide link"
+              className="inline-flex items-center gap-2 rounded-full border border-border bg-surface2 px-3 py-1 text-xs font-medium text-text hover:bg-surface2/70"
+            >
+              <BookOpen className="h-4 w-4" />
+              Guide
+              <ArrowUpRight className="h-4 w-4 opacity-60" />
+            </ExternalLink>
+          ) : null}
+          {post.repoUrl ? (
+            <ExternalLink
+              href={post.repoUrl}
+              ariaLabel="Repository link"
+              className="inline-flex items-center gap-2 rounded-full border border-border bg-surface2 px-3 py-1 text-xs font-medium text-text hover:bg-surface2/70"
+            >
+              <Github className="h-4 w-4" />
+              Repo
+              <ArrowUpRight className="h-4 w-4 opacity-60" />
+            </ExternalLink>
+          ) : (
+            <span className="rounded-full border border-border bg-surface2 px-3 py-1 text-xs font-medium text-muted">
+              Repo link: add in data
+            </span>
+          )}
+        </div>
       </div>
 
       <p className="mt-3 text-sm text-muted">{post.excerpt}</p>
