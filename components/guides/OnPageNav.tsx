@@ -120,14 +120,25 @@ function StepList({
             <span
               aria-hidden="true"
               className={[
-                "absolute left-[0.35rem] top-2.5 h-6 w-6 rounded-full border-2 bg-surface transition",
+                "absolute left-[0.35rem] top-2.5 flex h-6 w-6 items-center justify-center rounded-full border-2 transition",
                 isActiveStep
-                  ? "border-accent bg-accent/15"
+                  ? "border-accent bg-surface"
                   : isCompletedStep
-                    ? "border-accent/60 bg-accent/10"
+                    ? "border-accent bg-accent"
                     : "border-border bg-surface2"
               ].join(" ")}
-            />
+            >
+              <span
+                className={[
+                  "h-2.5 w-2.5 rounded-full transition",
+                  isActiveStep
+                    ? "bg-accent"
+                    : isCompletedStep
+                      ? "bg-accent"
+                      : "bg-transparent"
+                ].join(" ")}
+              />
+            </span>
             <a
               href={`#${step.heading.slug}`}
               onClick={(event) => {
@@ -143,34 +154,6 @@ function StepList({
             >
               {step.heading.text}
             </a>
-
-            {isActiveStep && step.children.length > 0 ? (
-              <ol className="mt-2 space-y-1 border-l border-border/80 pl-4">
-                {step.children.map((child) => {
-                  const isActiveChild = child.slug === activeId;
-
-                  return (
-                    <li key={child.slug}>
-                      <a
-                        href={`#${child.slug}`}
-                        onClick={(event) => {
-                          event.preventDefault();
-                          scrollToHeading(child.slug);
-                        }}
-                        className={[
-                          "block rounded-lg px-2 py-1 text-xs leading-5 transition",
-                          isActiveChild
-                            ? "bg-accent/10 font-medium text-text"
-                            : "text-muted hover:bg-surface2 hover:text-text"
-                        ].join(" ")}
-                      >
-                        {child.text}
-                      </a>
-                    </li>
-                  );
-                })}
-              </ol>
-            ) : null}
           </li>
         );
       })}
