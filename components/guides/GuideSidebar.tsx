@@ -80,8 +80,8 @@ export function GuideSidebar({ mode }: { mode: "desktop" | "mobile" }) {
 
   if (mode === "desktop") {
     return (
-      <aside className="hidden lg:block">
-        <div className="guide-panel sticky top-24 max-h-[calc(100vh-7rem)] overflow-y-auto p-4">
+      <aside className="hidden self-start lg:block">
+        <div className="guide-panel sticky top-28 max-h-[calc(100vh-8rem)] overflow-y-auto overscroll-contain p-4">
           <SidebarContent />
         </div>
       </aside>

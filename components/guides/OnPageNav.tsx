@@ -228,7 +228,7 @@ export function OnPageNav({
   }
 
   return (
-    <div className="guide-panel sticky top-24 max-h-[calc(100vh-7rem)] overflow-y-auto p-4">
+    <div className="guide-panel sticky top-28 max-h-[calc(100vh-8rem)] overflow-y-auto overscroll-contain p-4">
       <div className="mb-4 text-xs font-semibold uppercase tracking-[0.18em] text-accent">
         Analysis workflow
       </div>
