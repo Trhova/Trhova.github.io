@@ -42,7 +42,7 @@ export function DocsLayout({
           <GuideSidebar mode="mobile" />
         </div>
 
-        <div className="grid gap-6 lg:items-start lg:grid-cols-[16rem,minmax(0,1fr),15rem] xl:gap-8">
+        <div className="grid gap-6 lg:grid-cols-[16rem,minmax(0,1fr),15rem] xl:gap-8">
           <GuideSidebar mode="desktop" />
 
           <div className="min-w-0">
@@ -69,7 +69,7 @@ export function DocsLayout({
             <PrevNextNav currentSlug={currentSlug} />
           </div>
 
-          <aside className="hidden self-start lg:block">
+          <aside className="hidden lg:block">
             <OnPageNav
               headings={headings}
               mode="desktop"
