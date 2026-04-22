@@ -58,7 +58,6 @@ export function DocsLayout({
               <OnPageNav
                 headings={headings}
                 mode="mobile"
-                currentSlug={currentSlug}
               />
             </div>
 
@@ -73,7 +72,6 @@ export function DocsLayout({
             <OnPageNav
               headings={headings}
               mode="desktop"
-              currentSlug={currentSlug}
             />
           </aside>
         </div>

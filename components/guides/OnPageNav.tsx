@@ -3,7 +3,6 @@
 import { useEffect, useMemo, useState } from "react";
 
 import type { GuideHeading } from "@/lib/guides";
-import { getGuidePresentation } from "@/lib/guidePresentation";
 
 function useActiveHeading(headings: GuideHeading[]) {
   const [activeId, setActiveId] = useState(headings[0]?.slug ?? "");
@@ -180,36 +179,17 @@ function StepList({
 }
 
 export function OnPageNav({
-  currentSlug,
   headings,
   mode
 }: {
-  currentSlug: string;
   headings: GuideHeading[];
   mode: "desktop" | "mobile";
 }) {
-  const workflowSubsectionSlugs = useMemo(() => {
-    const sectionMap = getGuidePresentation(currentSlug)?.sections ?? {};
-    return new Set(Object.keys(sectionMap));
-  }, [currentSlug]);
-
   const items = useMemo(
     () => headings.filter((heading) => heading.depth <= 3),
     [headings]
   );
-  const steps = useMemo(
-    () =>
-      buildWorkflowSteps(items).map((step) => ({
-        ...step,
-        children:
-          workflowSubsectionSlugs.size > 0
-            ? step.children.filter((child) =>
-                workflowSubsectionSlugs.has(child.slug)
-              )
-            : step.children
-      })),
-    [items, workflowSubsectionSlugs]
-  );
+  const steps = useMemo(() => buildWorkflowSteps(items), [items]);
   const activeId = useActiveHeading(items);
 
   if (steps.length === 0) return null;
