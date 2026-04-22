@@ -22,6 +22,15 @@ function useActiveHeading(headings: GuideHeading[]) {
 
     const updateActiveHeading = () => {
       const offset = 160;
+      const nearPageBottom =
+        window.innerHeight + window.scrollY >=
+        document.documentElement.scrollHeight - 48;
+
+      if (nearPageBottom) {
+        setActiveId(items[items.length - 1]?.heading.slug ?? "");
+        return;
+      }
+
       let nextActiveId = items[0]?.heading.slug ?? "";
 
       for (const item of items) {
