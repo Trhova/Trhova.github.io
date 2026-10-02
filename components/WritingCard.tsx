@@ -1,17 +1,5 @@
-"use client";
-
-import {
-  ArrowUpRight,
-  BookOpen,
-  ChevronDown,
-  ChevronUp,
-  Github
-} from "lucide-react";
-import { useMemo, useState } from "react";
-
-import { ExternalLink } from "@/components/ExternalLink";
-import { Pill } from "@/components/Pill";
-
+import Link from "next/link";
+import { ArrowUpRight } from "lucide-react";
 type WritingPost = {
   id: string;
   title: string;
@@ -21,82 +9,38 @@ type WritingPost = {
   repoUrl?: string;
   siteUrl?: string;
 };
-
 export function WritingCard({ post }: { post: WritingPost }) {
-  const [expanded, setExpanded] = useState(false);
-  const readMoreId = useMemo(() => `post-${post.id}`, [post.id]);
-
   return (
-    <article className="rounded-2xl border border-border bg-surface p-6 shadow-soft">
-      <div className="flex items-start justify-between gap-4">
-        <h3 className="text-lg font-semibold tracking-tight text-text">
-          {post.title}
-        </h3>
-        <div className="flex flex-wrap items-center justify-end gap-2">
-          {post.siteUrl ? (
-            <ExternalLink
-              href={post.siteUrl}
-              ariaLabel="Guide link"
-              className="inline-flex items-center gap-2 rounded-full border border-border bg-surface2 px-3 py-1 text-xs font-medium text-text hover:bg-surface2/70"
-            >
-              <BookOpen className="h-4 w-4" />
-              Guide
-              <ArrowUpRight className="h-4 w-4 opacity-60" />
-            </ExternalLink>
-          ) : null}
-          {post.repoUrl ? (
-            <ExternalLink
+    <article className="writing-entry">
+      <div>
+        <p className="eyebrow">{post.tags.join(" / ")}</p>
+        <h2>{post.title}</h2>
+      </div>
+      <div>
+        <p>{post.excerpt}</p>
+        <div className="writing-links">
+          {post.siteUrl && (
+            <Link className="text-link" href={new URL(post.siteUrl).pathname}>
+              Read the guide <ArrowUpRight size={16} />
+            </Link>
+          )}
+          {post.repoUrl && (
+            <a
+              className="text-link"
               href={post.repoUrl}
-              ariaLabel="Repository link"
-              className="inline-flex items-center gap-2 rounded-full border border-border bg-surface2 px-3 py-1 text-xs font-medium text-text hover:bg-surface2/70"
+              target="_blank"
+              rel="noreferrer"
             >
-              <Github className="h-4 w-4" />
-              Repo
-              <ArrowUpRight className="h-4 w-4 opacity-60" />
-            </ExternalLink>
-          ) : (
-            <span className="rounded-full border border-border bg-surface2 px-3 py-1 text-xs font-medium text-muted">
-              Repo link: add in data
-            </span>
+              Code &amp; examples <ArrowUpRight size={16} />
+            </a>
           )}
         </div>
-      </div>
-
-      <p className="mt-3 text-sm text-muted">{post.excerpt}</p>
-
-      <div className="mt-4 flex flex-wrap gap-2">
-        {post.tags.map((t) => (
-          <Pill key={t}>{t}</Pill>
-        ))}
-      </div>
-
-      <button
-        type="button"
-        className="mt-5 inline-flex items-center gap-2 text-sm font-medium text-text hover:text-text/80"
-        aria-expanded={expanded}
-        aria-controls={readMoreId}
-        onClick={() => setExpanded((v) => !v)}
-      >
-        {expanded ? (
-          <>
-            Read less <ChevronUp className="h-4 w-4" />
-          </>
-        ) : (
-          <>
-            Read more <ChevronDown className="h-4 w-4" />
-          </>
-        )}
-      </button>
-
-      <div
-        id={readMoreId}
-        className={`mt-4 space-y-3 text-sm text-muted ${
-          expanded ? "block" : "hidden"
-        }`}
-      >
-        {post.body.map((p) => (
-          <p key={p.slice(0, 28)}>{p}</p>
-        ))}
+        <details>
+          <summary>More about this project</summary>
+          {post.body.map((p) => (
+            <p key={p}>{p}</p>
+          ))}
+        </details>
       </div>
     </article>
   );

@@ -1,44 +1,107 @@
+"use client";
 import Link from "next/link";
-
-import profile from "@/data/profile.json";
+import { usePathname } from "next/navigation";
+import { useEffect, useRef, useState } from "react";
+import { Menu, X } from "lucide-react";
 import { Container } from "@/components/Container";
-import { GuidesMenu } from "@/components/GuidesMenu";
 import { ThemeToggle } from "@/components/ThemeToggle";
-
-function NavLink({ href, children }: { href: string; children: string }) {
-  return (
-    <Link
-      href={href}
-      className="rounded-md px-3 py-2 text-muted hover:bg-surface2 hover:text-text"
-    >
-      {children}
-    </Link>
-  );
-}
-
+const links = [
+  { href: "/#research", label: "Research" },
+  { href: "/publications/", label: "Publications" },
+  { href: "/guides/", label: "Guides" },
+  { href: "/writing/", label: "Writing" },
+  { href: "/cv/", label: "About / CV" },
+];
 export function SiteNav() {
+  const [open, setOpen] = useState(false);
+  const pathname = usePathname();
+  const trigger = useRef<HTMLButtonElement>(null);
+  const header = useRef<HTMLElement>(null);
+  useEffect(() => {
+    setOpen(false);
+  }, [pathname]);
+  useEffect(() => {
+    function close(event: KeyboardEvent) {
+      if (event.key === "Escape" && open) {
+        setOpen(false);
+        trigger.current?.focus();
+      }
+    }
+    function outside(event: MouseEvent) {
+      if (!header.current?.contains(event.target as Node)) setOpen(false);
+    }
+    document.addEventListener("keydown", close);
+    document.addEventListener("mousedown", outside);
+    return () => {
+      document.removeEventListener("keydown", close);
+      document.removeEventListener("mousedown", outside);
+    };
+  }, [open]);
   return (
-    <div className="sticky top-0 z-40 border-b border-border/60 bg-surface/60 backdrop-blur">
-      <Container className="flex items-center justify-between py-3">
+    <header className="site-header" ref={header}>
+      <a href="#main-content" className="skip-link">
+        Skip to content
+      </a>
+      <Container className="nav-inner">
         <Link
           href="/"
-          className="font-semibold tracking-tight text-text hover:text-text/80"
+          className="wordmark"
+          aria-label="Troels Holger Vaaben, home"
         >
-          {profile.name}
+          <span className="brand-mark" aria-hidden="true">
+            tv<span>.</span>
+          </span>
+          <span>
+            Troels Holger Vaaben<small>Scientist · DTU BRIGHT</small>
+          </span>
         </Link>
-        <div className="flex items-center gap-2">
-          <nav className="hidden items-center gap-1 text-sm md:flex">
-            <NavLink href="/">Home</NavLink>
-            <NavLink href="/writing">Writing</NavLink>
-            <GuidesMenu />
-            <NavLink href="/publications">Publications</NavLink>
-            <NavLink href="/inspirations">Inspirations</NavLink>
-            <NavLink href="/resources">Resources</NavLink>
-            <NavLink href="/cv">CV</NavLink>
+        <div className="nav-actions">
+          <nav aria-label="Main navigation" className="desktop-nav">
+            {links.map((link) => (
+              <Link
+                key={link.href}
+                href={link.href}
+                aria-current={
+                  pathname.replace(/\/$/, "") === link.href.replace(/\/$/, "")
+                    ? "page"
+                    : undefined
+                }
+              >
+                {link.label}
+              </Link>
+            ))}
           </nav>
           <ThemeToggle />
+          <button
+            ref={trigger}
+            className="mobile-menu-button"
+            aria-label={open ? "Close navigation" : "Open navigation"}
+            aria-controls="mobile-navigation"
+            aria-expanded={open}
+            onClick={() => setOpen(!open)}
+          >
+            {open ? <X size={23} /> : <Menu size={23} />}
+          </button>
         </div>
       </Container>
-    </div>
+      <nav
+        id="mobile-navigation"
+        aria-label="Mobile navigation"
+        className="mobile-navigation"
+        hidden={!open}
+      >
+        {links.map((link) => (
+          <Link key={link.href} href={link.href} onClick={() => setOpen(false)}>
+            {link.label}
+          </Link>
+        ))}
+        <Link href="/resources/" onClick={() => setOpen(false)}>
+          Resources
+        </Link>
+        <Link href="/inspirations/" onClick={() => setOpen(false)}>
+          Reading &amp; listening
+        </Link>
+      </nav>
+    </header>
   );
 }

@@ -17,7 +17,7 @@ export function DocsLayout({
   readingTimeMinutes,
   summary,
   title,
-  whatYoullLearn = []
+  whatYoullLearn = [],
 }: {
   audience: string;
   children: ReactNode;
@@ -30,11 +30,12 @@ export function DocsLayout({
 }) {
   return (
     <main
+      id="main-content"
       className={[
         guideSans.variable,
         guideMono.variable,
         guideDisplay.variable,
-        "guide-theme relative py-8 sm:py-10"
+        "guide-theme relative py-8 sm:py-10",
       ].join(" ")}
     >
       <Container className="max-w-[96rem]">
@@ -55,10 +56,7 @@ export function DocsLayout({
             />
 
             <div className="mt-4 lg:hidden">
-              <OnPageNav
-                headings={headings}
-                mode="mobile"
-              />
+              <OnPageNav headings={headings} mode="mobile" />
             </div>
 
             <div className="guide-panel mt-6 min-w-0 px-5 py-8 sm:px-8">
@@ -69,10 +67,7 @@ export function DocsLayout({
           </div>
 
           <aside className="hidden lg:block">
-            <OnPageNav
-              headings={headings}
-              mode="desktop"
-            />
+            <OnPageNav headings={headings} mode="desktop" />
           </aside>
         </div>
       </Container>

@@ -11,15 +11,23 @@ export default function sitemap(): MetadataRoute.Sitemap {
   return [
     {
       url: siteUrl,
-      lastModified: new Date()
+      lastModified: new Date(),
     },
-    {
-      url: `${siteUrl}/guides/`,
-      lastModified: new Date()
-    },
+    ...[
+      "publications",
+      "cv",
+      "writing",
+      "guides",
+      "resources",
+      "inspirations",
+      "links",
+    ].map((route) => ({
+      url: `${siteUrl}/${route}/`,
+      lastModified: new Date(),
+    })),
     ...publishedGuides.map((guide) => ({
       url: `${siteUrl}/guides/${guide.slug}/`,
-      lastModified: new Date()
-    }))
+      lastModified: new Date(),
+    })),
   ];
 }

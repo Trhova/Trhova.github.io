@@ -6,8 +6,8 @@ export function PipelineOverview() {
       </p>
 
       <div className="grid gap-5 xl:grid-cols-2">
-        <div className="rounded-[1.5rem] border border-accent/20 bg-accent/10 p-5">
-          <div className="mb-4 flex items-center justify-between gap-3">
+        <div className="min-w-0 rounded-[1.5rem] border border-accent/20 bg-accent/10 p-5">
+          <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
             <h3 className="m-0 font-[var(--font-guide-display)] text-2xl text-text">
               Upstream
             </h3>
@@ -41,8 +41,8 @@ export function PipelineOverview() {
           </div>
         </div>
 
-        <div className="rounded-[1.5rem] border border-amber-300/25 bg-amber-300/10 p-5">
-          <div className="mb-4 flex items-center justify-between gap-3">
+        <div className="min-w-0 rounded-[1.5rem] border border-amber-300/25 bg-amber-300/10 p-5">
+          <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
             <h3 className="m-0 font-[var(--font-guide-display)] text-2xl text-text">
               Downstream
             </h3>
@@ -93,7 +93,7 @@ export function PipelineOverview() {
 function StageCard({
   description,
   emphasis = "default",
-  title
+  title,
 }: {
   description: string;
   emphasis?: "accent" | "default" | "warning";
@@ -109,9 +109,7 @@ function StageCard({
   return (
     <div className={`rounded-2xl border p-4 ${emphasisClassName}`}>
       <p className="m-0 text-sm font-semibold text-text">{title}</p>
-      <p className="mt-2 mb-0 text-sm leading-7 text-muted">
-        {description}
-      </p>
+      <p className="mt-2 mb-0 text-sm leading-7 text-muted">{description}</p>
     </div>
   );
 }

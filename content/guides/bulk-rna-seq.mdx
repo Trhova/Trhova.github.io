@@ -38,13 +38,15 @@ Switch away from that default when the question changes:
 - Choose **paired-end and longer reads** when genome-aware follow-up is an important part of the study rather than an afterthought.
 
 <Callout title="Companion analysis repo">
-  <p>
+
     If you want a small runnable example that follows the downstream logic in this guide, use the companion airway walkthrough repo, <a href="https://github.com/Trhova/Transcriptomics-extended" target="_blank" rel="noreferrer">Transcriptomics-extended</a>. It walks through QC, DESeq2, ORA, GSEA, ssGSEA, PROGENy, and DoRothEA + VIPER on the Bioconductor airway dataset.
-  </p>
+
 </Callout>
 
 <Callout title="Who this is for" tone="success">
-  <p>This guide stays strictly in bulk RNA-seq. If your core question depends on rare cell populations, lineage mixtures, or spatial localization, bulk RNA-seq may still be useful, but a single-cell, spatial, or long-read assay may answer the real question better.</p>
+
+This guide stays strictly in bulk RNA-seq. If your core question depends on rare cell populations, lineage mixtures, or spatial localization, bulk RNA-seq may still be useful, but a single-cell, spatial, or long-read assay may answer the real question better.
+
 </Callout>
 
 ## Where are you in the process?
@@ -146,13 +148,21 @@ The best bulk RNA-seq analysis begins before the sequencer sees a library. Bad e
 />
 
 <Callout title="Poly(A) versus rRNA depletion" tone="warning">
-  <p><strong>Poly(A) enrichment</strong> is the cleanest default for coding-focused mammalian expression studies with decent RNA integrity.</p>
-  <p><strong>rRNA depletion</strong> is the better default for degraded RNA, FFPE-like material, non-polyadenylated transcripts, nascent or intronic signal, and broader transcriptome coverage. It often trades interpretive simplicity for coverage breadth.</p>
+
+<strong>Poly(A) enrichment</strong> is the cleanest default for coding-focused mammalian expression studies with decent RNA integrity.
+
+
+<strong>rRNA depletion</strong> is the better default for degraded RNA, FFPE-like material, non-polyadenylated transcripts, nascent or intronic signal, and broader transcriptome coverage. It often trades interpretive simplicity for coverage breadth.
+
 </Callout>
 
 <Callout title="Human and mouse annotation note">
-  <p>For computation, prefer stable IDs such as Ensembl gene identifiers. Use gene symbols for figures and readable tables later. Strip version suffixes only intentionally, because careless version stripping can silently merge or drop rows.</p>
-  <p>If you map mouse genes into human-centric signatures, treat ortholog mapping as a convenience layer. It is not ground truth, especially for immune, developmental, and rapidly evolving gene families.</p>
+
+For computation, prefer stable IDs such as Ensembl gene identifiers. Use gene symbols for figures and readable tables later. Strip version suffixes only intentionally, because careless version stripping can silently merge or drop rows.
+
+
+If you map mouse genes into human-centric signatures, treat ortholog mapping as a convenience layer. It is not ground truth, especially for immune, developmental, and rapidly evolving gene families.
+
 </Callout>
 
 ### Annotation and reference strategy
@@ -220,7 +230,9 @@ est_power
 ```
 
 <Callout title="Planning pitfall">
-  <p>Do not treat batch as an afterthought. If all treated samples were processed on a different day, by a different person, or with a different kit lot, that is a design problem first and a statistics problem second.</p>
+
+Do not treat batch as an afterthought. If all treated samples were processed on a different day, by a different person, or with a different kit lot, that is a design problem first and a statistics problem second.
+
 </Callout>
 
 ### From FASTQ to trusted quantification
@@ -359,7 +371,9 @@ gse <- summarizeToGene(se)
 ```
 
 <Callout title="When STAR should be your default instead" tone="warning">
-  <p>Choose <a href="https://github.com/alexdobin/STAR">STAR</a> when you need true genome alignments for exon-aware counting, genome-browser coverage, or genome-position-aware follow-up. Salmon is the default for expression-first questions, not for all questions.</p>
+
+Choose <a href="https://github.com/alexdobin/STAR">STAR</a> when you need true genome alignments for exon-aware counting, genome-browser coverage, or genome-position-aware follow-up. Salmon is the default for expression-first questions, not for all questions.
+
 </Callout>
 
 <ScrollTable>
@@ -461,22 +475,42 @@ head(sig[order(sig$padj), ])
 ```
 
 <Callout title="How to read the main DESeq2 outputs">
-  <p><strong>`pvalue` / `padj`</strong>: the statistical significance output from the DESeq2 model. This is the main inference result.</p>
-  <p><strong>`log2FoldChange`</strong>: the estimated effect size, including both magnitude and direction of change.</p>
-  <p><strong>`lfcShrink` output</strong>: a shrunken, more stable version of log2 fold change that is usually better for ranking genes and practical interpretation.</p>
-  <p><strong>`vst()` output</strong>: variance-stabilized expression values for visualization such as PCA or clustering, not for statistical testing.</p>
-  <p>DESeq2 performs inference by modeling raw count data, with normalization handled internally. Transformed outputs such as VST and normalized counts are for visualization and exploratory analysis, not for the main hypothesis test.</p>
+
+<strong>`pvalue` / `padj`</strong>: the statistical significance output from the DESeq2 model. This is the main inference result.
+
+
+<strong>`log2FoldChange`</strong>: the estimated effect size, including both magnitude and direction of change.
+
+
+<strong>`lfcShrink` output</strong>: a shrunken, more stable version of log2 fold change that is usually better for ranking genes and practical interpretation.
+
+
+<strong>`vst()` output</strong>: variance-stabilized expression values for visualization such as PCA or clustering, not for statistical testing.
+
+
+DESeq2 performs inference by modeling raw count data, with normalization handled internally. Transformed outputs such as VST and normalized counts are for visualization and exploratory analysis, not for the main hypothesis test.
+
 </Callout>
 
 <Callout title="What is statistically detectable vs what is biologically meaningful?" tone="warning">
-  <p>A small adjusted p-value tells you that a change is statistically detectable under the model. It does <strong>not</strong> tell you that the change is biologically important, cell-intrinsic, or worth building a story around.</p>
-  <p>In many real bulk RNA-seq studies, effect size, consistency across replicates, and biological interpretability matter more than a binary significance line. Shrunken log2 fold change and overall coherence are often more useful for prioritization than asking whether a gene sits just above or below `padj < 0.05`.</p>
+
+A small adjusted p-value tells you that a change is statistically detectable under the model. It does <strong>not</strong> tell you that the change is biologically important, cell-intrinsic, or worth building a story around.
+
+
+In many real bulk RNA-seq studies, effect size, consistency across replicates, and biological interpretability matter more than a binary significance line. Shrunken log2 fold change and overall coherence are often more useful for prioritization than asking whether a gene sits just above or below `padj < 0.05`.
+
 </Callout>
 
 <Callout title="Count models versus voom">
-  <p><strong>DESeq2</strong> is the clean default for most ordinary bulk RNA-seq comparisons: count data in, design formula specified, differential expression out.</p>
-  <p><strong>edgeR</strong> is a good switch when you still want a count-based framework but want more explicit control over filtering and model choices, or when the rest of the project already uses edgeR.</p>
-  <p><strong>limma-voom</strong> is a good switch when the real benefit is the limma workflow itself, especially for many contrasts or broader linear-model analyses. The key difference is that voom converts counts into weighted log-expression values before modeling rather than fitting the DESeq2 count model directly.</p>
+
+<strong>DESeq2</strong> is the clean default for most ordinary bulk RNA-seq comparisons: count data in, design formula specified, differential expression out.
+
+
+<strong>edgeR</strong> is a good switch when you still want a count-based framework but want more explicit control over filtering and model choices, or when the rest of the project already uses edgeR.
+
+
+<strong>limma-voom</strong> is a good switch when the real benefit is the limma workflow itself, especially for many contrasts or broader linear-model analyses. The key difference is that voom converts counts into weighted log-expression values before modeling rather than fitting the DESeq2 count model directly.
+
 </Callout>
 
 ### Batch effects and unwanted variation
@@ -529,8 +563,12 @@ dds <- DESeq(dds)
 ### Slow down before interpretation
 
 <Callout title="A DEG table is not yet a biological conclusion" tone="warning">
-  <p>Before you move into enrichment or more advanced downstream layers, stop and ask what the DE pattern might actually reflect. Expression changes can represent specific biology, but they can also reflect response, compensation, injury, timing effects, generic stress programs, or differences in cell mixture.</p>
-  <p>Treat the DEG table as evidence about RNA abundance, not as direct proof of protein abundance or cellular function. The next job is to decide whether the pattern is robust, biologically coherent, and worth deeper follow-up at the pathway, regulatory, or composition level.</p>
+
+Before you move into enrichment or more advanced downstream layers, stop and ask what the DE pattern might actually reflect. Expression changes can represent specific biology, but they can also reflect response, compensation, injury, timing effects, generic stress programs, or differences in cell mixture.
+
+
+Treat the DEG table as evidence about RNA abundance, not as direct proof of protein abundance or cellular function. The next job is to decide whether the pattern is robust, biologically coherent, and worth deeper follow-up at the pathway, regulatory, or composition level.
+
 </Callout>
 
 ### Downstream layers after DE
@@ -608,8 +646,12 @@ ora <- enrichGO(
 ```
 
 <Callout title="Gene-set dependence is real" tone="warning">
-  <p><strong>Hallmark</strong>, <strong>Reactome</strong>, <strong>GO</strong>, and cell-type signature resources can all produce different interpretations from the same ranked list. That does not automatically mean one is wrong; it means the gene-set universe is part of the analysis.</p>
-  <p>Frame enrichment results as interpretations conditional on the chosen resource, and look for convergence across more than one sensible collection before making strong claims.</p>
+
+<strong>Hallmark</strong>, <strong>Reactome</strong>, <strong>GO</strong>, and cell-type signature resources can all produce different interpretations from the same ranked list. That does not automatically mean one is wrong; it means the gene-set universe is part of the analysis.
+
+
+Frame enrichment results as interpretations conditional on the chosen resource, and look for convergence across more than one sensible collection before making strong claims.
+
 </Callout>
 
 ORA and GSEA still summarize the group-level contrast. If the next question is whether individual samples carry a program strongly or weakly, move from gene sets to per-sample scores.
@@ -777,7 +819,9 @@ Recommended practical default:
 - use **MuSiC** when you have a truly matched single-cell reference and want proportion-aware estimation
 
 <Callout title="Cell composition versus cell state" tone="warning">
-  <p>A higher immune, stromal, or EMT-like signal can mean more cells of that type, the same cells in a different state, or both. Use deconvolution to stress-test your interpretation, not to declare exact ground truth from bulk alone.</p>
+
+A higher immune, stromal, or EMT-like signal can mean more cells of that type, the same cells in a different state, or both. Use deconvolution to stress-test your interpretation, not to declare exact ground truth from bulk alone.
+
 </Callout>
 
 At this point you should know whether your story is mainly gene-level, program-level, sample-state-level, regulatory, or compositional. If the remaining question is specifically about isoforms, splicing, or genomic position, move into a more structure-aware layer.
@@ -879,7 +923,9 @@ This section is intentionally blunt. Most bulk RNA-seq pain comes from a small s
 ### Interpretation pitfalls
 
 <Callout title="Interpretation principle" tone="warning">
-  <p>Expression changes reflect what cells are responding to or attempting, not necessarily what is functionally occurring.</p>
+
+Expression changes reflect what cells are responding to or attempting, not necessarily what is functionally occurring.
+
 </Callout>
 
 This final list focuses on interpretation traps that still matter even after you have already checked for technical structure and composition effects.

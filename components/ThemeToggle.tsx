@@ -24,18 +24,20 @@ export function ThemeToggle() {
     setTheme(getInitialTheme());
   }, []);
 
-  useEffect(() => {
-    document.documentElement.classList.toggle("dark", theme === "dark");
+  function changeTheme() {
+    const next = theme === "dark" ? "light" : "dark";
+    setTheme(next);
+    document.documentElement.classList.toggle("dark", next === "dark");
     try {
-      window.localStorage.setItem("theme", theme);
+      window.localStorage.setItem("theme", next);
     } catch {}
-  }, [theme]);
+  }
 
   return (
     <button
       type="button"
-      onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
-      className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-border bg-surface text-text shadow-sm hover:bg-surface2"
+      onClick={changeTheme}
+      className="theme-toggle"
       aria-label="Toggle dark mode"
       title="Toggle theme"
     >
@@ -47,4 +49,3 @@ export function ThemeToggle() {
     </button>
   );
 }
-

@@ -1,49 +1,42 @@
-import { Github, GraduationCap, Linkedin, Mail } from "lucide-react";
-
+import Link from "next/link";
+import { ArrowUpRight } from "lucide-react";
 import profile from "@/data/profile.json";
 import { Container } from "@/components/Container";
-import { ExternalLink } from "@/components/ExternalLink";
-
 export function SiteFooter() {
   return (
-    <footer className="border-t border-border/60 bg-surface/50">
-      <Container className="flex flex-col items-center justify-between gap-4 py-10 md:flex-row">
-        <div className="text-sm text-muted">
-          © {new Date().getFullYear()} {profile.name} · Built with Next.js +
-          Tailwind
+    <footer className="site-footer">
+      <Container>
+        <div className="footer-top">
+          <div>
+            <p className="eyebrow">Get in touch</p>
+            <h2>Let’s talk research.</h2>
+            <a className="footer-email" href={`mailto:${profile.links.email}`}>
+              {profile.links.email} <ArrowUpRight size={22} />
+            </a>
+          </div>
+          <div className="footer-links">
+            <a
+              href={profile.links.googleScholar}
+              target="_blank"
+              rel="noreferrer"
+            >
+              Google Scholar <ArrowUpRight size={16} />
+            </a>
+            <a href={profile.links.github} target="_blank" rel="noreferrer">
+              GitHub <ArrowUpRight size={16} />
+            </a>
+            <a href={profile.links.linkedin} target="_blank" rel="noreferrer">
+              LinkedIn <ArrowUpRight size={16} />
+            </a>
+            <Link href="/resources/">Research tools</Link>
+            <Link href="/inspirations/">Reading &amp; listening</Link>
+          </div>
         </div>
-        <div className="flex items-center gap-3">
-          <ExternalLink
-            href={profile.links.github}
-            ariaLabel="GitHub"
-            className="rounded-full border border-border bg-surface p-2 hover:bg-surface2"
-          >
-            <Github className="h-4 w-4" />
-          </ExternalLink>
-          <ExternalLink
-            href={profile.links.googleScholar}
-            ariaLabel="Google Scholar"
-            className="rounded-full border border-border bg-surface p-2 hover:bg-surface2"
-          >
-            <GraduationCap className="h-4 w-4" />
-          </ExternalLink>
-          <ExternalLink
-            href={profile.links.linkedin}
-            ariaLabel="LinkedIn"
-            className="rounded-full border border-border bg-surface p-2 hover:bg-surface2"
-          >
-            <Linkedin className="h-4 w-4" />
-          </ExternalLink>
-          <ExternalLink
-            href={`mailto:${profile.links.email}`}
-            ariaLabel="Email"
-            className="rounded-full border border-border bg-surface p-2 hover:bg-surface2"
-          >
-            <Mail className="h-4 w-4" />
-          </ExternalLink>
+        <div className="footer-bottom">
+          <span>© {new Date().getFullYear()} Troels Holger Vaaben</span>
+          <span>Technical University of Denmark · BRIGHT</span>
         </div>
       </Container>
     </footer>
   );
 }
-

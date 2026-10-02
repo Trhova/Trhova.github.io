@@ -1,6 +1,6 @@
 {
   "name": "Troels Holger Vaaben",
-  "tagline": "Cancer • Microbiome • Synthetic Biology • Translational Research",
+  "tagline": "Microbes, metabolism and human health. Troels Holger Vaaben, scientist and Co-PI at DTU BRIGHT.",
   "headshot": "/mugshot.png",
   "links": {
     "googleScholar": "https://scholar.google.com/citations?user=tZbZawMAAAAJ&hl=en",
@@ -10,9 +10,9 @@
   },
   "about": {
     "paragraphs": [
-      "I’m a bioinformatician working in microbial genomics, mainly focused on how microbes and hosts interact in things like infectious disease and cancer. I spend a lot of time working with metagenomics, pangenomics, and different types of omics data, trying to piece together what’s actually going on biologically.",
-      "Most of my work revolves around microbiome data, where I’m interested in connecting who’s there (microbes), what they can do (functions), and how the host responds. I like building analyses and workflows that make those connections easier to understand and use in real projects. From the microscopic worm C. elegans to mouse models and patient-derived organoids, I enjoy working across biological systems to better understand host–microbe interactions in real-world contexts.",
-      "If you’re working on something similar, or just have some cool microbiome data, feel free to reach out."
+      "I’m Troels, a scientist and Co-PI at DTU BRIGHT. I work on microbial foods, microbiome research and metabolic health, with a background in experimental cancer research and synthetic biology.",
+      "I started at the bench, engineering bacteria and working with experimental models. These days I spend much of my time connecting multi-omics data to biological questions, supervising researchers, and building tools that make the work easier to reproduce.",
+      "AI has become part of that work: research agents, protein and DNA foundation models, and practical training for colleagues. I’m interested in where these tools help us ask better questions—and how we check their answers."
     ]
   }
 }

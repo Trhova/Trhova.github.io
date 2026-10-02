@@ -2,9 +2,9 @@
   "posts": [
     {
       "id": "bulk-rna-seq-guide",
-      "title": "An intuition-first bulk RNA-seq guide, with a runnable R companion",
+      "title": "Making sense of bulk RNA-seq",
       "tags": ["Transcriptomics", "Bulk RNA-seq", "Guide"],
-      "excerpt": "I put together a bulk RNA-seq guide that walks from experimental design and QC to differential expression and layered biological interpretation. The website version is the conceptual guide; the GitHub repo is the small runnable R walkthrough.",
+      "excerpt": "A guide from experimental design and quality control to differential expression and biological interpretation, with an R companion you can run.",
       "siteUrl": "https://trhova.github.io/guides/bulk-rna-seq/",
       "repoUrl": "https://github.com/Trhova/Transcriptomics-extended",
       "body": [
@@ -15,9 +15,9 @@
     },
     {
       "id": "causal-microbiome",
-      "title": "From correlations to causation in microbiome research",
+      "title": "Thinking causally about the microbiome",
       "tags": ["Microbiome", "Causal inference", "Methods"],
-      "excerpt": "Microbiome studies can generate huge multi-omics datasets, but many analyses stop at association. If we want to understand mechanisms and design interventions, we need explicit causal questions and assumptions — not just ranked features.",
+      "excerpt": "Worked examples of double machine learning and mediation analysis, with attention to confounding and the assumptions each question needs.",
       "repoUrl": "https://github.com/Trhova/Causal-Microbiome-Omics",
       "body": [
         "A practical way forward is to treat causal inference as part of the analysis workflow: define an estimand, state assumptions, and make confounding and mediation explicit. This often changes what you prioritize in preprocessing, feature selection, and reporting.",
@@ -27,9 +27,9 @@
     },
     {
       "id": "multiomics-decision-guide",
-      "title": "A practical decision guide for multi-omics integration",
+      "title": "Choosing a multi-omics approach",
       "tags": ["Multi-omics", "Methods"],
-      "excerpt": "Multi-omics integration can feel overwhelming: many data blocks, many methods, and unclear assumptions. A structured decision guide helps you pick an approach that matches the question, the sample size, and what “signal” should mean.",
+      "excerpt": "A decision guide to integration methods, their assumptions and useful baselines. Start with the biological question and the data you actually have.",
       "repoUrl": "https://github.com/Trhova/Multi-omics",
       "body": [
         "The guide starts with the question you actually want to answer (prediction, interpretation, shared biology, or block-specific effects), then maps that to a small set of method families and baselines worth running early.",

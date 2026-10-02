@@ -2,6 +2,8 @@
 
 Personal website for Troels Holger Vaaben.
 
+The [October 2026 refresh report](reports/website-refresh-2026-10-02.md) records the design, publication sources and browser checks.
+
 This repository contains a small Next.js site for:
 - a landing page / profile
 - publications

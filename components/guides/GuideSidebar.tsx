@@ -54,7 +54,7 @@ function SidebarContent({
           return (
             <div
               key={guide.slug}
-              className="rounded-2xl border border-border bg-surface px-4 py-3 opacity-85"
+              className="rounded-2xl border border-border bg-surface px-4 py-3"
             >
               <div className="flex items-center justify-between gap-3">
                 <div className="text-sm font-semibold text-text">

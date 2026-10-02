@@ -1,0 +1,38 @@
+[
+  {
+    "route": "/",
+    "violations": []
+  },
+  {
+    "route": "/publications/",
+    "violations": []
+  },
+  {
+    "route": "/cv/",
+    "violations": []
+  },
+  {
+    "route": "/writing/",
+    "violations": []
+  },
+  {
+    "route": "/guides/",
+    "violations": []
+  },
+  {
+    "route": "/resources/",
+    "violations": []
+  },
+  {
+    "route": "/inspirations/",
+    "violations": []
+  },
+  {
+    "route": "/links/",
+    "violations": []
+  },
+  {
+    "route": "/guides/bulk-rna-seq/",
+    "violations": []
+  }
+]
