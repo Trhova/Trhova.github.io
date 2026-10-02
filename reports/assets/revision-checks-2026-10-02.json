@@ -1,0 +1,101 @@
+{
+  "results": [
+    {
+      "width": 1440,
+      "route": "/",
+      "overflow": false,
+      "h1s": 1,
+      "brokenImages": 0,
+      "trainingClaim": false
+    },
+    {
+      "width": 1440,
+      "route": "/cv/",
+      "overflow": false,
+      "h1s": 1,
+      "brokenImages": 0,
+      "trainingClaim": false
+    },
+    {
+      "width": 1440,
+      "route": "/writing/",
+      "overflow": false,
+      "h1s": 1,
+      "brokenImages": 0,
+      "trainingClaim": false
+    },
+    {
+      "width": 1440,
+      "route": "/resources/",
+      "overflow": false,
+      "h1s": 1,
+      "brokenImages": 0,
+      "trainingClaim": false
+    },
+    {
+      "width": 390,
+      "route": "/",
+      "overflow": false,
+      "h1s": 1,
+      "brokenImages": 0,
+      "trainingClaim": false
+    },
+    {
+      "width": 390,
+      "route": "/cv/",
+      "overflow": false,
+      "h1s": 1,
+      "brokenImages": 0,
+      "trainingClaim": false
+    },
+    {
+      "width": 390,
+      "route": "/writing/",
+      "overflow": false,
+      "h1s": 1,
+      "brokenImages": 0,
+      "trainingClaim": false
+    },
+    {
+      "width": 390,
+      "route": "/resources/",
+      "overflow": false,
+      "h1s": 1,
+      "brokenImages": 0,
+      "trainingClaim": false
+    },
+    {
+      "width": 320,
+      "route": "/",
+      "overflow": false,
+      "h1s": 1,
+      "brokenImages": 0,
+      "trainingClaim": false
+    },
+    {
+      "width": 320,
+      "route": "/cv/",
+      "overflow": false,
+      "h1s": 1,
+      "brokenImages": 0,
+      "trainingClaim": false
+    },
+    {
+      "width": 320,
+      "route": "/writing/",
+      "overflow": false,
+      "h1s": 1,
+      "brokenImages": 0,
+      "trainingClaim": false
+    },
+    {
+      "width": 320,
+      "route": "/resources/",
+      "overflow": false,
+      "h1s": 1,
+      "brokenImages": 0,
+      "trainingClaim": false
+    }
+  ],
+  "errors": []
+}

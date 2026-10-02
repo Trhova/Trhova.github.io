@@ -7,25 +7,25 @@ const resources = [
   {
     name: "Anvi’o",
     description:
-      "For exploring pangenomes, inspecting metagenomic bins and keeping genome-level interpretation close to the data.",
+      "Useful for pangenomics, metagenome-resolved analyses, interactive inspection of bins and contigs, and figure-ready visual summaries. I use it when exploratory visualization and genome-centric interpretation need to stay close to the underlying data.",
     url: "https://merenlab.org/software/anvio/",
   },
   {
     name: "Bactopia",
     description:
-      "A starting point for processing bacterial isolates consistently, from assembly and annotation to comparative analyses.",
+      "A practical bacterial genomics workflow stack for assembly, annotation, QC, taxonomic characterization, and downstream summaries. Good when processing many isolates with consistent defaults and reproducible outputs matters more than one-off scripting.",
     url: "https://bactopia.github.io/",
   },
   {
     name: "nf-core",
     description:
-      "Community-maintained Nextflow pipelines. I use them as a starting point for reproducible RNA-seq and metagenomics workflows.",
+      "Community-maintained Nextflow pipelines that provide solid starting points for RNA-seq, metagenomics, and other common bioinformatics workflows. I treat them as reproducible baselines, then adapt configuration and execution details to local HPC environments when needed.",
     url: "https://nf-co.re/",
   },
   {
     name: "Nextstrain",
     description:
-      "A useful example of how phylogenies, genomic data and interactive visualisation can help people explore an analysis.",
+      "A strong reference point for making genomic epidemiology and phylogenetic interpretation visually legible. Even outside outbreak-focused work, it is a useful example of how analysis, annotation, and interactive visualization can be combined into something scientists can actually explore.",
     url: "https://nextstrain.org/",
   },
 ];
@@ -36,8 +36,8 @@ export default function ResourcesPage() {
       <main id="main-content">
         <Container>
           <header className="page-heading">
-            <p className="eyebrow">On the workbench</p>
-            <h1>Tools I return to.</h1>
+            <p className="eyebrow">Resources</p>
+            <h1>Resources</h1>
             <p>
               A few useful starting points for microbial genomics and
               reproducible analysis.

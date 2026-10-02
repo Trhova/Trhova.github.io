@@ -1,6 +1,14 @@
 # Personal website refresh 2 October 2026
 
-The site now presents Troels' research, current Co-PI role and scientific output through a new homepage and consistent supporting pages. The design uses a plum, coral and warm-paper palette, an original microbial illustration, a personal portrait, and a publication list grouped by year. The reference was [Pinilla-Redondo Lab](https://pinillaredondolab.com/); its illustrations, photographs, branding and text were not reused.
+## Follow-up: preserve the original content
+
+At Troels’ request, the homepage now returns to the original name, tagline, biography, areas of work and post wording. The oversized illustrated hero and newly written research sections were removed. The portrait is 180 pixels on desktop and 128 pixels on mobile. Resource descriptions were restored, and the CV page returns to a simple request link instead of the unsolicited expanded biography. The AI-training claims and added AI positioning were removed from the rendered site. The refreshed palette, typography, responsive navigation and updated publication records remain.
+
+The production build passed. Chromium checks of the four changed pages at 1440, 390 and 320 pixels passed without overflow, broken images or runtime errors. The homepage passed automated axe A/AA checks. Desktop and mobile screenshots were visually inspected before publishing. [Revised desktop preview](assets/revised-home-desktop-2026-10-02.png), [revised mobile preview](assets/revised-home-mobile-2026-10-02.png), [revision checks](assets/revision-checks-2026-10-02.json).
+
+The initial design and review below are retained as historical context; the follow-up above describes the published revision.
+
+The initial site refresh presents Troels' research, current Co-PI role and scientific output through a new homepage and consistent supporting pages. The design uses a plum, coral and warm-paper palette, an original microbial illustration, a personal portrait, and a publication list grouped by year. The reference was [Pinilla-Redondo Lab](https://pinillaredondolab.com/); its illustrations, photographs, branding and text were not reused.
 
 ## Content
 

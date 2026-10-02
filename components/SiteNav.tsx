@@ -6,11 +6,11 @@ import { Menu, X } from "lucide-react";
 import { Container } from "@/components/Container";
 import { ThemeToggle } from "@/components/ThemeToggle";
 const links = [
-  { href: "/#research", label: "Research" },
+  { href: "/#about", label: "About" },
   { href: "/publications/", label: "Publications" },
   { href: "/guides/", label: "Guides" },
   { href: "/writing/", label: "Writing" },
-  { href: "/cv/", label: "About / CV" },
+  { href: "/cv/", label: "CV" },
 ];
 export function SiteNav() {
   const [open, setOpen] = useState(false);

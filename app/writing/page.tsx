@@ -16,7 +16,7 @@ export default function WritingPage() {
         <Container>
           <header className="page-heading">
             <p className="eyebrow">Notes from the work</p>
-            <h1>Writing &amp; walkthroughs.</h1>
+            <h1>Writing</h1>
             <p>
               Scientific questions, analysis decisions, and examples you can run
               yourself.

@@ -1181,3 +1181,121 @@ a {
 .paper-mark > span {
   color: #51525c;
 }
+
+/* Compact personal homepage: original content with the refreshed palette. */
+.profile-intro {
+  background: rgb(var(--surface2));
+  border-bottom: 1px solid rgb(var(--border));
+  padding: 48px 0;
+}
+.profile-intro-layout {
+  display: grid;
+  grid-template-columns: 180px minmax(0, 1fr);
+  align-items: center;
+  gap: 40px;
+}
+.profile-photo {
+  width: 180px;
+  height: 180px;
+  clip-path: circle(46% at 50% 49%);
+}
+.profile-intro h1 {
+  font-size: clamp(30px, 3.4vw, 44px);
+  font-weight: 600;
+  letter-spacing: -1.3px;
+  line-height: 1.2;
+}
+.profile-tagline {
+  margin-top: 14px;
+  color: rgb(var(--muted));
+  line-height: 1.7;
+}
+.profile-contacts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 24px;
+  margin-top: 18px;
+}
+.profile-contacts .text-link {
+  gap: 8px;
+}
+.personal-section {
+  padding: 48px 0;
+}
+.personal-home .section-heading {
+  margin-bottom: 24px;
+}
+.personal-home .section-heading h2 {
+  font-size: 28px;
+  letter-spacing: -0.7px;
+}
+.personal-about-layout {
+  display: grid;
+  grid-template-columns: 1.4fr 1fr;
+  gap: 64px;
+}
+.personal-about-layout .about-copy > p:first-child {
+  margin-top: 0;
+}
+.working-areas {
+  border-left: 2px solid #a29abc;
+  padding-left: 28px;
+}
+.working-areas h3 {
+  font-weight: 600;
+}
+.working-areas ul {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 18px;
+  margin: 16px 0 24px;
+  color: rgb(var(--muted));
+  font-size: 13px;
+}
+.working-areas p {
+  font-size: 14px;
+  line-height: 1.8;
+  color: rgb(var(--muted));
+}
+.compact-papers {
+  background: rgb(var(--surface2));
+}
+.recent-paper-list article {
+  padding: 18px 0;
+  border-top: 1px solid rgb(var(--border));
+}
+.recent-paper-list h3 {
+  font-size: 18px;
+  line-height: 1.5;
+  font-weight: 500;
+  max-width: 920px;
+}
+.recent-paper-list h3 svg {
+  display: inline;
+}
+.recent-paper-list a:hover {
+  color: rgb(var(--accent));
+}
+@media (max-width: 780px) {
+  .profile-intro {
+    padding: 30px 0;
+  }
+  .profile-intro-layout {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+  .profile-photo {
+    width: 128px;
+    height: 128px;
+  }
+  .personal-section {
+    padding: 36px 0;
+  }
+  .personal-about-layout {
+    grid-template-columns: 1fr;
+    gap: 28px;
+  }
+  .profile-contacts {
+    gap: 6px 18px;
+  }
+}
